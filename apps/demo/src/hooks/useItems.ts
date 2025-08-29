@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import type { OrderUpdate } from '@your-org/drag-drop-list';
+import type { OrderUpdate } from 'react-dragdrop-kit';
 import { makeItems, shuffleArr } from '../utils/items';
 import type { Item } from '../types/item';
 import type { ThemeKey } from '../constants/themes';

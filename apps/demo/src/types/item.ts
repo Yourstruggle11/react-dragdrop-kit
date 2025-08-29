@@ -1,4 +1,4 @@
-import type { DraggableItem } from '@your-org/drag-drop-list';
+import type { DraggableItem } from 'react-dragdrop-kit';
 
 export type Priority = 'low' | 'medium' | 'high';
 export type Item = DraggableItem & {

@@ -1,4 +1,4 @@
-import type { OrderUpdate } from '@your-org/drag-drop-list';
+import type { OrderUpdate } from 'react-dragdrop-kit';
 import type { Item } from '../../types/item';
 
 type Props = {

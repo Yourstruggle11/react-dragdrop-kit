@@ -1,0 +1,39 @@
+# keep tarball tiny (defensive; "files" field already whitelists)
+# exclude everything by default
+*
+
+# allow built artifacts and docs
+!dist/
+!README.md
+!LICENSE
+!package.json
+
+# (explicitly exclude common junk if "files" gets removed later)
+node_modules/
+coverage/
+.vscode/
+.idea/
+*.log
+*.tgz
+
+# sources and configs (not needed in published package)
+src/
+test/
+tests/
+__tests__/
+.storybook/
+examples/
+scripts/
+playground/
+demo/
+apps/
+packages/
+
+rollup.config.*.js
+rollup.config.js
+tsconfig*.json
+jest.config.*.js
+jest.config.js
+.eslintrc*
+.prettierrc*
+.npmrc

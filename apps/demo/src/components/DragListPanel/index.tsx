@@ -1,5 +1,5 @@
 import React from 'react';
-import { DragDropList, type OrderUpdate } from '@your-org/drag-drop-list';
+import { DragDropList, type OrderUpdate } from 'react-dragdrop-kit';
 import { Grid, List } from 'lucide-react';
 import type { Item } from '../../types/item';
 
