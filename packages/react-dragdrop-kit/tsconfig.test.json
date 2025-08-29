@@ -2,8 +2,8 @@
   "extends": "./tsconfig.base.json",
   "compilerOptions": {
     "types": ["jest", "node"],
-    "noEmit": true,
-    "rootDir": "."
+    "rootDir": ".",
+    "outDir": "./dist-test"
   },
   "include": ["src", "__tests__", "jest.setup.ts"]
 }

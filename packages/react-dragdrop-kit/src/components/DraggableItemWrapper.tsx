@@ -136,17 +136,6 @@ export function DraggableItemWrapper<T extends DraggableItem>({
     [item.id, index, disabled, showDropIndicator]
   );
 
-//   useEffect(() => {
-//     const element = elementRef.current;
-//     if (!element) return;
-
-//     element.setAttribute("data-index", index.toString());
-
-//     if (!disabled) {
-//       return combine(createDraggable(element), createDropTarget(element));
-//     }
-//   }, [index, createDraggable, createDropTarget, disabled]);
-
   useEffect(() => {
     const element = elementRef.current;
     if (!element) return;

@@ -1,6 +1,7 @@
 import { monitorForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
 import { extractClosestEdge } from "@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge";
 import type { DraggableItem, OrderUpdate } from "../types";
+import { reorder, calculateOrderUpdates } from "../utils/order";
 
 export function useDragDropMonitor<T extends DraggableItem>({
   items,
@@ -15,30 +16,6 @@ export function useDragDropMonitor<T extends DraggableItem>({
     return () => {};
   }
 
-  const reorder = (list: T[], startIndex: number, endIndex: number) => {
-    const result = Array.from(list);
-    const [removed] = result.splice(startIndex, 1);
-    result.splice(endIndex, 0, removed);
-    return result;
-  };
-
-  const calculateOrderUpdates = (
-    oldItems: T[],
-    newItems: T[]
-  ): OrderUpdate[] => {
-    const affectedItems = newItems.filter(
-      (item, index) => item.id !== oldItems[index]?.id
-    );
-    const orderList = affectedItems
-      .slice()
-      .sort((a, b) => a.position - b.position)
-      .map((item) => item.position);
-
-    return affectedItems.map((item, index) => ({
-      id: item.id,
-      newPosition: orderList[index],
-    }));
-  };
 
   const handleDrop = ({ location, source }: any) => {
     const sourceIndex = source.data?.index as number;

@@ -13,7 +13,7 @@ test('reorder moves item correctly', () => {
   expect(result.map(i => i.id)).toEqual(['2', '3', '1']);
 });
 
-test('calculateOrderUpdates maps to original positions', () => {
+test('calculateOrderUpdates returns correct new positions after reorder', () => {
   const oldItems: Item[] = [
     { id: '1', position: 0, name: 'A' },
     { id: '2', position: 1, name: 'B' },
@@ -26,8 +26,8 @@ test('calculateOrderUpdates maps to original positions', () => {
   ];
   const updates = calculateOrderUpdates(oldItems, newItems);
   expect(updates).toEqual([
-    { id: '2', newPosition: 1 },
-    { id: '3', newPosition: 2 },
-    { id: '1', newPosition: 0 }
+    { id: '2', newPosition: 0 }, // B moved from index 1 to index 0
+    { id: '3', newPosition: 1 }, // C moved from index 2 to index 1
+    { id: '1', newPosition: 2 }  // A moved from index 0 to index 2
   ]);
 });

@@ -1,11 +1,11 @@
 module.exports = {
   preset: "ts-jest",
   testEnvironment: "jsdom",
-  roots: ["<rootDir>/src", "<rootDir>/test"],
-  testMatch: ["**/__tests__/**/*.ts?(x)", "**/?(*.)+(spec|test).ts?(x)"],
-  transform: { "^.+\\.tsx?$": ["ts-jest", { tsconfig: "tsconfig.json" }] },
+  roots: ["<rootDir>"],
+  testMatch: ["**/__tests__/**/*.test.ts?(x)", "**/__tests__/**/*.spec.ts?(x)"],
+  transform: { '^.+\\.tsx?$': ['ts-jest', { tsconfig: '<rootDir>/tsconfig.test.json' }] },
   moduleNameMapper: { "^@/(.*)$": "<rootDir>/src/$1" },
-  setupFilesAfterEnv: ["<rootDir>/test/setup.ts"],
+  setupFilesAfterEnv: ["<rootDir>/jest.setup.ts"],
   collectCoverageFrom: ["src/**/*.{ts,tsx}", "!src/**/*.d.ts", "!src/index.ts"],
   moduleFileExtensions: ["ts", "tsx", "js"],
   coverageThreshold: {
