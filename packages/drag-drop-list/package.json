@@ -1,0 +1,76 @@
+{
+  "name": "react-dragdrop-kit",
+  "version": "1.0.0",
+  "description": "A flexible, lightweight React drag-and-drop kit for building sortable lists, grids, and boards with ease.",
+  "main": "dist/index.js",
+  "module": "dist/index.esm.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "rollup -c",
+    "dev": "rollup -c -w",
+    "test": "jest",
+    "lint": "eslint src/**/*.{ts,tsx}",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "react",
+    "drag-drop",
+    "drag-and-drop",
+    "reorder",
+    "list",
+    "sortable",
+    "draggable",
+    "drag",
+    "drop",
+    "dragdrop",
+    "grid",
+    "kanban",
+    "dnd"
+  ],
+  "author": "Souvik Sen <https://github.com/Yourstruggle11>",
+  "license": "MIT",
+  "peerDependencies": {
+    "@atlaskit/pragmatic-drag-and-drop": "^1.7.4",
+    "@atlaskit/pragmatic-drag-and-drop-hitbox": "^1.1.0",
+    "react": ">=16.8.0",
+    "react-dom": ">=16.8.0"
+  },
+  "dependencies": {
+    "@atlaskit/pragmatic-drag-and-drop": "^1.7.4",
+    "@atlaskit/pragmatic-drag-and-drop-hitbox": "^1.1.0"
+  },
+  "devDependencies": {
+    "@atlaskit/pragmatic-drag-and-drop": "^1.7.4",
+    "@atlaskit/pragmatic-drag-and-drop-hitbox": "^1.1.0",
+    "@rollup/plugin-commonjs": "^25.0.0",
+    "@rollup/plugin-node-resolve": "^15.0.0",
+    "@rollup/plugin-terser": "^0.4.4",
+    "@rollup/plugin-typescript": "^11.0.0",
+    "@types/react": "^18.0.0",
+    "@types/react-dom": "^18.0.0",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "eslint": "^8.0.0",
+    "eslint-plugin-react": "^7.0.0",
+    "eslint-plugin-react-hooks": "^4.0.0",
+    "jest": "^29.0.0",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
+    "rollup": "^3.0.0",
+    "rollup-plugin-peer-deps-external": "^2.2.4",
+    "tslib": "^2.0.0",
+    "typescript": "^5.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Yourstruggle11/react-dragdrop-kit.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Yourstruggle11/react-dragdrop-kit/issues"
+  },
+  "homepage": "https://github.com/Yourstruggle11/react-dragdrop-kit#readme",
+  "sideEffects": false
+}
