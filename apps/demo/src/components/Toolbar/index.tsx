@@ -34,44 +34,58 @@ export default function Toolbar(props: Props) {
 		canRemove
 	} = props;
 
+	// Responsive: icon-only mode for small screens
+	const [iconOnly, setIconOnly] = React.useState(false);
+	React.useEffect(() => {
+		const handler = () => setIconOnly(window.innerWidth < 600);
+		handler();
+		window.addEventListener('resize', handler);
+		return () => window.removeEventListener('resize', handler);
+	}, []);
+
+	const btn = (
+		onClick: () => void,
+		icon: React.ReactNode,
+		label: string,
+		opts: { disabled?: boolean; tooltip?: string } = {}
+	) => (
+		<button
+			onClick={onClick}
+			disabled={opts.disabled}
+			title={opts.tooltip || label}
+			style={{ minWidth: iconOnly ? 40 : 0, justifyContent: iconOnly ? 'center' : 'flex-start' }}
+			aria-label={label}
+		>
+			{icon}
+			{!iconOnly && <span style={{ marginLeft: 8 }}>{label}</span>}
+		</button>
+	);
+
 	return (
-		<div className="panel" style={{ marginBottom: 20, width: '100%' }}>
+		<div className="panel" style={{ marginBottom: 20, width: '100%', boxShadow: '0 4px 24px rgba(102,126,234,0.10)' }}>
 			<div
 				className="toolbar"
 				style={{
 					display: 'grid',
-					gridTemplateColumns: 'repeat(auto-fit, minmax(170px, 1fr))',
-					gap: 12
+					gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))',
+					gap: 10,
+					alignItems: 'center',
 				}}
 			>
-				<button onClick={() => setDirection(d => (d === 'vertical' ? 'horizontal' : 'vertical'))}>
-					{direction === 'vertical' ? <List size={16} /> : <Grid size={16} />}
-					{direction === 'vertical' ? 'Vertical' : 'Horizontal'}
-				</button>
-				<button onClick={addItem}>
-					<Plus size={16} /> Add Item
-				</button>
-				<button onClick={shuffleItems}>
-					<Shuffle size={16} /> Shuffle
-				</button>
-				<button onClick={resetItems}>
-					<RotateCcw size={16} /> Reset
-				</button>
-				<button onClick={undo} disabled={!canUndo}>
-					<ChevronDown size={16} style={{ transform: 'rotate(90deg)' }} /> Undo
-				</button>
-				<button onClick={redo} disabled={!canRedo}>
-					<ChevronUp size={16} style={{ transform: 'rotate(90deg)' }} /> Redo
-				</button>
-				<button onClick={exportData}>
-					<Download size={16} /> Export
-				</button>
-				<button onClick={importData}>
-					<Upload size={16} /> Import
-				</button>
-				<button onClick={removeLast} disabled={!canRemove}>
-					<Trash2 size={16} /> Remove Last
-				</button>
+				{btn(
+					() => setDirection(d => (d === 'vertical' ? 'horizontal' : 'vertical')),
+					direction === 'vertical' ? <List size={18} /> : <Grid size={18} />,
+					direction === 'vertical' ? 'Vertical' : 'Horizontal',
+					{ tooltip: 'Toggle list direction' }
+				)}
+				{btn(addItem, <Plus size={18} />, 'Add Item', { tooltip: 'Add a new item' })}
+				{btn(shuffleItems, <Shuffle size={18} />, 'Shuffle', { tooltip: 'Shuffle items' })}
+				{btn(resetItems, <RotateCcw size={18} />, 'Reset', { tooltip: 'Reset items' })}
+				{btn(undo, <ChevronDown size={18} style={{ transform: 'rotate(90deg)' }} />, 'Undo', { disabled: !canUndo, tooltip: 'Undo last change' })}
+				{btn(redo, <ChevronUp size={18} style={{ transform: 'rotate(90deg)' }} />, 'Redo', { disabled: !canRedo, tooltip: 'Redo last change' })}
+				{btn(exportData, <Download size={18} />, 'Export', { tooltip: 'Export data' })}
+				{btn(importData, <Upload size={18} />, 'Import', { tooltip: 'Import data' })}
+				{btn(removeLast, <Trash2 size={18} />, 'Remove Last', { disabled: !canRemove, tooltip: 'Remove last item' })}
 			</div>
 		</div>
 	);

@@ -27,11 +27,37 @@ export default function DragListPanel({
 	renderItem
 }: Props) {
 	return (
-		<div className="panel" style={{ overflowX: 'auto', minHeight: 120, width: '100%' }}>
-			<h3 style={{ marginTop: 0, marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
-				{direction === 'vertical' ? <List size={20} /> : <Grid size={20} />} Draggable Items ({items.length})
+		<div
+			className="panel"
+			style={{
+				overflowX: 'auto',
+				minHeight: 120,
+				width: '100%',
+				boxShadow: '0 8px 32px rgba(102,126,234,0.10), 0 2px 8px rgba(0,0,0,0.08)',
+				paddingTop: 28,
+				paddingBottom: 32,
+				position: 'relative',
+			}}
+			aria-label="Draggable Items List"
+			role="region"
+			tabIndex={0}
+		>
+			<h3
+				style={{
+					marginTop: 0,
+					marginBottom: 18,
+					display: 'flex',
+					alignItems: 'center',
+					gap: 10,
+					fontWeight: 800,
+					fontSize: 22,
+					color: '#667eea',
+					letterSpacing: 0.2,
+				}}
+			>
+				{direction === 'vertical' ? <List size={22} /> : <Grid size={22} />}
+				Draggable Items <span style={{ color: '#22223b', fontWeight: 600 }}>({items.length})</span>
 			</h3>
-
 			<div style={{ whiteSpace: direction === 'horizontal' ? 'nowrap' : 'normal' }}>
 				<DragDropList
 					items={items}

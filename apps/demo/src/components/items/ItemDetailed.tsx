@@ -12,44 +12,52 @@ export default function ItemDetailed({ item, direction, animate, onDuplicate }: 
 		medium: '#f59e0b',
 		high: '#ef4444'
 	};
-
 	return (
 		<div
+			tabIndex={0}
+			aria-label={`Item ${item.name}`}
 			style={{
 				minWidth: direction === 'horizontal' ? 180 : undefined,
-				padding: 16,
+				padding: 18,
 				border: '2px solid',
 				borderColor: isGrad ? '#e5e7eb' : hex,
-				borderRadius: 12,
+				borderRadius: 16,
 				background: isGrad
 					? GRADIENT_MAP[item.color as string]
 					: `linear-gradient(135deg, ${hexToRgba(hex, 0.15)} 0%, ${hexToRgba(hex, 0.05)} 100%)`,
-				boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
-				transition: animate ? 'all 0.3s ease' : undefined,
-				color: isGrad ? '#fff' : FALLBACK_HEX
+				boxShadow: '0 6px 24px rgba(102,126,234,0.10)',
+				transition: animate ? 'all 0.22s cubic-bezier(0.4,0,0.2,1)' : undefined,
+				color: isGrad ? '#fff' : FALLBACK_HEX,
+				outline: 'none',
+				cursor: 'grab',
 			}}
+			onMouseOver={e => (e.currentTarget.style.boxShadow = '0 12px 32px rgba(102,126,234,0.18)')}
+			onMouseOut={e => (e.currentTarget.style.boxShadow = '0 6px 24px rgba(102,126,234,0.10)')}
+			onFocus={e => (e.currentTarget.style.boxShadow = '0 12px 32px rgba(102,126,234,0.18)')}
+			onBlur={e => (e.currentTarget.style.boxShadow = '0 6px 24px rgba(102,126,234,0.10)')}
 		>
 			<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start' }}>
 				<div>
-					<div style={{ fontWeight: 700, fontSize: 16, marginBottom: 4 }}>{item.name}</div>
-					<div style={{ fontSize: 13, color: isGrad ? 'rgba(255,255,255,0.9)' : '#4b5563', marginBottom: 8 }}>
+					<div style={{ fontWeight: 800, fontSize: 17, marginBottom: 4 }}>{item.name}</div>
+					<div style={{ fontSize: 13, color: isGrad ? 'rgba(255,255,255,0.9)' : '#4b5563', marginBottom: 8, fontWeight: 500 }}>
 						{item.description}
 					</div>
 					<div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
 						<span
 							style={{
 								fontSize: 11,
-								padding: '2px 6px',
+								padding: '2px 7px',
 								borderRadius: 4,
 								background: priorityBg[item.priority || 'medium'],
 								color: 'white',
-								fontWeight: 600,
-								textTransform: 'capitalize'
+								fontWeight: 700,
+								textTransform: 'capitalize',
+								letterSpacing: 0.2,
 							}}
 						>
 							{item.priority}
 						</span>
-						<span style={{ fontSize: 11, color: isGrad ? 'rgba(255,255,255,0.9)' : '#6b7280' }}>
+						<span style={{ fontSize: 11, color: isGrad ? 'rgba(255,255,255,0.9)' : '#6b7280', fontWeight: 500 }}>
 							Position: {item.position}
 						</span>
 					</div>
@@ -65,11 +73,16 @@ export default function ItemDetailed({ item, direction, animate, onDuplicate }: 
 						cursor: 'pointer',
 						padding: 4,
 						opacity: 0.9,
-						color: isGrad ? '#fff' : FALLBACK_HEX
+						color: isGrad ? '#fff' : FALLBACK_HEX,
+						borderRadius: 6,
+						transition: 'background 0.18s',
 					}}
 					title="Duplicate"
+					aria-label="Duplicate item"
+					onMouseOver={e => (e.currentTarget.style.background = 'rgba(102,126,234,0.10)')}
+					onMouseOut={e => (e.currentTarget.style.background = 'none')}
 				>
-					<Copy size={14} />
+					<Copy size={15} />
 				</button>
 			</div>
 		</div>
