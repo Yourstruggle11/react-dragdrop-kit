@@ -10,8 +10,9 @@ type Props = {
 	gap: number;
 	disabled: boolean;
 	showDropIndicator: boolean;
+	dropIndicatorPosition: 'top' | 'bottom';
 	dragPreviewStyle?: React.CSSProperties;
-	renderItem: (item: Item ) => React.ReactNode;
+	renderItem: (item: Item) => React.ReactNode;
 };
 
 export default function DragListPanel({
@@ -21,6 +22,7 @@ export default function DragListPanel({
 	gap,
 	disabled,
 	showDropIndicator,
+	dropIndicatorPosition,
 	dragPreviewStyle,
 	renderItem
 }: Props) {
@@ -38,6 +40,7 @@ export default function DragListPanel({
 					gap={gap}
 					disabled={disabled}
 					showDropIndicator={showDropIndicator}
+					dropIndicatorPosition={dropIndicatorPosition}
 					dropIndicatorClassName="demo-drop-indicator"
 					dragPreviewStyle={dragPreviewStyle}
 					renderItem={renderItem}

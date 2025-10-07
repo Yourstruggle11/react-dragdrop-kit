@@ -23,6 +23,7 @@ export function DraggableItemWrapper<T extends DraggableItem>({
   showDropIndicator = false,
   dropIndicatorClassName = "",
   dropIndicatorStyle = {},
+  dropIndicatorPosition = "bottom",
 }: DraggableItemWrapperProps<T>) {
   const elementRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
@@ -114,12 +115,11 @@ export function DraggableItemWrapper<T extends DraggableItem>({
         }),
         canDrop: (args: any) => args.source.data?.type === DRAGGABLE_ITEM,
         getIsSticky: () => true,
-        onDragEnter: ({ source, self, location }: any) => {
+        onDragEnter: ({ source, self }: any) => {
           if (source.data?.id !== self.data?.id) {
             setIsHovered(true);
             if (showDropIndicator) {
-              const edge = location.current.dropTargets[0]?.edge;
-              setDropPosition(edge === "top" ? "top" : "bottom");
+              setDropPosition(dropIndicatorPosition);
             }
           }
         },
@@ -133,7 +133,7 @@ export function DraggableItemWrapper<T extends DraggableItem>({
         },
       });
     },
-    [item.id, index, disabled, showDropIndicator]
+    [item.id, index, disabled, showDropIndicator, dropIndicatorPosition]
   );
 
   useEffect(() => {

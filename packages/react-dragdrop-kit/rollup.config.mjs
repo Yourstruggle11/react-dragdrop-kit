@@ -50,6 +50,8 @@ export default [
       commonjs(),
       typescript({
         tsconfig: "./tsconfig.json",
+        declaration: true,
+        declarationDir: "dist",
         exclude: ["**/*.test.ts", "**/*.test.tsx"],
       }),
       terser(),

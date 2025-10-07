@@ -24,6 +24,7 @@ export function DragDropList<T extends DraggableItem>({
   showDropIndicator = false,
   dropIndicatorClassName = "",
   dropIndicatorStyle = {},
+  dropIndicatorPosition = "bottom",
 }: DragDropListProps<T>) {
   const containerRef = useRef<HTMLDivElement>(null);
   const monitor = useDragDropMonitor({ items, onReorder, disabled });
@@ -90,6 +91,7 @@ export function DragDropList<T extends DraggableItem>({
           showDropIndicator={showDropIndicator}
           dropIndicatorClassName={dropIndicatorClassName}
           dropIndicatorStyle={dropIndicatorStyle}
+          dropIndicatorPosition={dropIndicatorPosition}
         >
           {renderItem(item, index)}
         </DraggableItemWrapper>

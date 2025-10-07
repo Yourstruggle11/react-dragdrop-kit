@@ -9,6 +9,8 @@ type Props = {
 	setDisabled(b: boolean): void;
 	showDropIndicator: boolean;
 	setShowDropIndicator(b: boolean): void;
+	dropIndicatorPosition: 'top' | 'bottom';
+	setDropIndicatorPosition(p: 'top' | 'bottom'): void;
 	useCustomPreview: boolean;
 	setUseCustomPreview(b: boolean): void;
 	animateChanges: boolean;
@@ -34,6 +36,8 @@ export default function SettingsPanel(p: Props) {
 		setDisabled,
 		showDropIndicator,
 		setShowDropIndicator,
+		dropIndicatorPosition,
+		setDropIndicatorPosition,
 		useCustomPreview,
 		setUseCustomPreview,
 		animateChanges,
@@ -100,6 +104,25 @@ export default function SettingsPanel(p: Props) {
 							{showState ? <Eye size={16} /> : <EyeOff size={16} />} Show State
 						</label>
 					</div>
+
+					{showDropIndicator && (
+						<div>
+							<label className="setting-label" style={{ marginBottom: 8, display: 'block' }}>
+								Drop Indicator Position:
+							</label>
+							<div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+								{(['top', 'bottom'] as ('top' | 'bottom')[]).map(pos => (
+									<button
+										key={pos}
+										className={`theme-button ${dropIndicatorPosition === pos ? 'active' : ''}`}
+										onClick={() => setDropIndicatorPosition(pos)}
+									>
+										{pos[0].toUpperCase() + pos.slice(1)}
+									</button>
+								))}
+							</div>
+						</div>
+					)}
 
 					<div>
 						<label className="setting-label" style={{ marginBottom: 8, display: 'block' }}>

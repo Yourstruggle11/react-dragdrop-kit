@@ -28,6 +28,7 @@ export type DragDropListProps<T extends DraggableItem> = {
   showDropIndicator?: boolean;
   dropIndicatorClassName?: string;
   dropIndicatorStyle?: React.CSSProperties;
+  dropIndicatorPosition?: "top" | "bottom";
 };
 
 export type DraggableItemWrapperProps<T extends DraggableItem> = {
@@ -44,4 +45,5 @@ export type DraggableItemWrapperProps<T extends DraggableItem> = {
   showDropIndicator?: boolean;
   dropIndicatorClassName?: string;
   dropIndicatorStyle?: React.CSSProperties;
+  dropIndicatorPosition?: "top" | "bottom";
 };

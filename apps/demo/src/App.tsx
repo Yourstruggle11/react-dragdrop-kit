@@ -17,6 +17,7 @@ export default function App() {
 	const [gap, setGap] = useState(12);
 	const [disabled, setDisabled] = useState(false);
 	const [showDropIndicator, setShowDropIndicator] = useState(true);
+	const [dropIndicatorPosition, setDropIndicatorPosition] = useState<'top' | 'bottom'>('bottom');
 	const [useCustomPreview, setUseCustomPreview] = useState(true);
 	const [showSettings, setShowSettings] = useState(true);
 	const [showState, setShowState] = useState(true);
@@ -141,6 +142,8 @@ export default function App() {
 				setDisabled={setDisabled}
 				showDropIndicator={showDropIndicator}
 				setShowDropIndicator={setShowDropIndicator}
+				dropIndicatorPosition={dropIndicatorPosition}
+				setDropIndicatorPosition={setDropIndicatorPosition}
 				useCustomPreview={useCustomPreview}
 				setUseCustomPreview={setUseCustomPreview}
 				animateChanges={animateChanges}
@@ -164,6 +167,7 @@ export default function App() {
 					gap={gap}
 					disabled={disabled}
 					showDropIndicator={showDropIndicator}
+					dropIndicatorPosition={dropIndicatorPosition}
 					dragPreviewStyle={previewStyle}
 					renderItem={renderItem}
 				/>
