@@ -10,8 +10,12 @@ import DragListPanel from './components/DragListPanel';
 import StatePanel from './components/StatePanel';
 import { renderItemFactory, type ItemStyle } from './components/items';
 import type { Item } from './types/item';
+import KanbanExample from './components/KanbanExample';
+
+type Tab = 'list' | 'kanban';
 
 export default function App() {
+	const [activeTab, setActiveTab] = useState<Tab>('list');
 	// layout + behavior flags
 	const [direction, setDirection] = useState<'vertical' | 'horizontal'>('vertical');
 	const [gap, setGap] = useState(16);
@@ -396,6 +400,48 @@ export default function App() {
 						.demo-footer a:hover {
 							color: #b3c0ff;
 						}
+
+						/* Kanban responsive styles */
+						.kanban-container {
+							width: 100%;
+							max-width: 100vw;
+							overflow-x: hidden;
+						}
+
+						@media (max-width: 1200px) {
+							.kanban-container {
+								padding: 0 16px;
+							}
+						}
+
+						@media (max-width: 800px) {
+							.kanban-container {
+								padding: 0 8px;
+							}
+						}
+
+						@media (max-width: 600px) {
+							.kanban-container {
+								padding: 0 4px;
+							}
+						}
+
+						/* Kanban board scrollbar styles */
+						.kanban-board-container::-webkit-scrollbar {
+							height: 6px;
+						}
+						.kanban-board-container::-webkit-scrollbar-track {
+							background: rgba(0, 0, 0, 0.1);
+							border-radius: 3px;
+						}
+						.kanban-board-container::-webkit-scrollbar-thumb {
+							background: rgba(102, 126, 234, 0.6);
+							border-radius: 3px;
+						}
+						.kanban-board-container {
+							scrollbar-width: thin;
+							scrollbar-color: rgba(102, 126, 234, 0.6) rgba(0, 0, 0, 0.1);
+						}
 					`}</style>
 
 			{/* Header */}
@@ -429,74 +475,126 @@ export default function App() {
 						npm install
 					</a>
 				</div>
+
+				{/* Tabs */}
+				<div style={{
+					marginTop: '32px',
+					display: 'flex',
+					gap: '12px',
+					justifyContent: 'center',
+					flexWrap: 'wrap'
+				}}>
+					<button
+						onClick={() => setActiveTab('list')}
+						style={{
+							padding: '10px 24px',
+							background: activeTab === 'list' ? 'white' : 'rgba(255,255,255,0.2)',
+							color: activeTab === 'list' ? '#667eea' : 'white',
+							border: '2px solid ' + (activeTab === 'list' ? 'white' : 'rgba(255,255,255,0.3)'),
+							borderRadius: '8px',
+							cursor: 'pointer',
+							fontSize: '15px',
+							fontWeight: 600,
+							transition: 'all 0.2s',
+						}}
+					>
+						📋 Drag List
+					</button>
+					<button
+						onClick={() => setActiveTab('kanban')}
+						style={{
+							padding: '10px 24px',
+							background: activeTab === 'kanban' ? 'white' : 'rgba(255,255,255,0.2)',
+							color: activeTab === 'kanban' ? '#667eea' : 'white',
+							border: '2px solid ' + (activeTab === 'kanban' ? 'white' : 'rgba(255,255,255,0.3)'),
+							borderRadius: '8px',
+							cursor: 'pointer',
+							fontSize: '15px',
+							fontWeight: 600,
+							transition: 'all 0.2s',
+						}}
+					>
+						🗂️ Kanban Board
+					</button>
+				</div>
 			</div>
 
-			{/* Toolbar */}
-			<div style={{ maxWidth: 1200, margin: '0 auto', marginBottom: 18 }}>
-				<Toolbar
-					direction={direction}
-					setDirection={setDirection}
-					addItem={addItem}
-					shuffleItems={shuffleItems}
-					resetItems={resetItems}
-					undo={history.undo}
-					redo={history.redo}
-					canUndo={history.index > 0}
-					canRedo={history.index < history.history.length - 1}
-					exportData={exportData}
-					importData={importData}
-					removeLast={removeLast}
-					canRemove={items.length > 1}
-				/>
-			</div>
+			{activeTab === 'list' && (
+				<>
+					{/* Toolbar */}
+					<div style={{ maxWidth: 1200, margin: '0 auto', marginBottom: 18 }}>
+						<Toolbar
+							direction={direction}
+							setDirection={setDirection}
+							addItem={addItem}
+							shuffleItems={shuffleItems}
+							resetItems={resetItems}
+							undo={history.undo}
+							redo={history.redo}
+							canUndo={history.index > 0}
+							canRedo={history.index < history.history.length - 1}
+							exportData={exportData}
+							importData={importData}
+							removeLast={removeLast}
+							canRemove={items.length > 1}
+						/>
+					</div>
 
-			{/* Settings */}
-			<div style={{ maxWidth: 1200, margin: '0 auto', marginBottom: 0 }}>
-				<SettingsPanel
-					gap={gap}
-					setGap={setGap}
-					disabled={disabled}
-					setDisabled={setDisabled}
-					showDropIndicator={showDropIndicator}
-					setShowDropIndicator={setShowDropIndicator}
-					dropIndicatorPosition={dropIndicatorPosition}
-					setDropIndicatorPosition={setDropIndicatorPosition}
-					useCustomPreview={useCustomPreview}
-					setUseCustomPreview={setUseCustomPreview}
-					animateChanges={animateChanges}
-					setAnimateChanges={setAnimateChanges}
-					showState={showState}
-					setShowState={setShowState}
-					itemStyle={itemStyle}
-					setItemStyle={setItemStyle}
-					currentTheme={currentTheme}
-					onApplyTheme={applyTheme}
-					show={showSettings}
-					setShow={setShowSettings}
-				/>
-			</div>
+					{/* Settings */}
+					<div style={{ maxWidth: 1200, margin: '0 auto', marginBottom: 0 }}>
+						<SettingsPanel
+							gap={gap}
+							setGap={setGap}
+							disabled={disabled}
+							setDisabled={setDisabled}
+							showDropIndicator={showDropIndicator}
+							setShowDropIndicator={setShowDropIndicator}
+							dropIndicatorPosition={dropIndicatorPosition}
+							setDropIndicatorPosition={setDropIndicatorPosition}
+							useCustomPreview={useCustomPreview}
+							setUseCustomPreview={setUseCustomPreview}
+							animateChanges={animateChanges}
+							setAnimateChanges={setAnimateChanges}
+							showState={showState}
+							setShowState={setShowState}
+							itemStyle={itemStyle}
+							setItemStyle={setItemStyle}
+							currentTheme={currentTheme}
+							onApplyTheme={applyTheme}
+							show={showSettings}
+							setShow={setShowSettings}
+						/>
+					</div>
 
-			{/* Main */}
-			<div className="main-grid" style={{ ['--cols' as string]: showState ? 'minmax(0,1fr) 420px' : 'minmax(0,1fr)', maxWidth: 1200, margin: '0 auto' }}>
-				<DragListPanel
-					items={items}
-					onReorder={handleReorder}
-					direction={direction}
-					gap={gap}
-					disabled={disabled}
-					showDropIndicator={showDropIndicator}
-					dropIndicatorPosition={dropIndicatorPosition}
-					dragPreviewStyle={previewStyle}
-					renderItem={renderItem}
-				/>
-				<StatePanel
-					show={showState}
-					items={items}
-					lastUpdates={lastUpdates}
-					historyIndex={history.index}
-					historyLen={history.history.length}
-				/>
-			</div>
+					{/* Main */}
+					<div className="main-grid" style={{ ['--cols' as string]: showState ? 'minmax(0,1fr) 420px' : 'minmax(0,1fr)', maxWidth: 1200, margin: '0 auto' }}>
+						<DragListPanel
+							items={items}
+							onReorder={handleReorder}
+							direction={direction}
+							gap={gap}
+							disabled={disabled}
+							showDropIndicator={showDropIndicator}
+							dropIndicatorPosition={dropIndicatorPosition}
+							dragPreviewStyle={previewStyle}
+							renderItem={renderItem}
+						/>
+						<StatePanel
+							show={showState}
+							items={items}
+							lastUpdates={lastUpdates}
+							historyIndex={history.index}
+							historyLen={history.history.length}
+						/>
+					</div>
+				</>
+			)}
+
+			{activeTab === 'kanban' && (
+				<div className="kanban-container">
+					<KanbanExample />
+				</div>
+			)}
 
 			{/* Footer */}
 			<footer className="demo-footer">

@@ -60,4 +60,38 @@ export default [
       moduleSideEffects: false,
     },
   },
+  {
+    input: "src/kanban/index.ts",
+    output: [
+      {
+        file: "dist/kanban.js",
+        format: "cjs",
+        sourcemap: true,
+        exports: "named",
+      },
+      {
+        file: "dist/kanban.esm.js",
+        format: "esm",
+        sourcemap: true,
+      },
+    ],
+    external,
+    plugins: [
+      peerDepsExternal(),
+      resolve({
+        extensions: [".mjs", ".js", ".json", ".ts", ".tsx"],
+      }),
+      commonjs(),
+      typescript({
+        tsconfig: "./tsconfig.json",
+        declaration: true,
+        declarationDir: "dist",
+        exclude: ["**/*.test.ts", "**/*.test.tsx"],
+      }),
+      terser(),
+    ],
+    treeshake: {
+      moduleSideEffects: false,
+    },
+  },
 ];

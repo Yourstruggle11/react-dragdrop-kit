@@ -1,8 +1,8 @@
 {
   "name": "react-dragdrop-kit",
   "author": "Souvik Sen <https://github.com/Yourstruggle11>",
-  "version": "1.1.0",
-  "description": "A flexible, lightweight React drag-and-drop kit for building sortable lists, grids, and boards with ease.",
+  "version": "1.2.0",
+  "description": "A flexible, lightweight React drag-and-drop kit for building sortable lists, grids, and kanban boards with ease.",
   "license": "MIT",
 
   "main": "dist/index.js",
@@ -13,6 +13,11 @@
       "types": "./dist/src/index.d.ts",
       "import": "./dist/index.esm.js",
       "require": "./dist/index.js"
+    },
+    "./kanban": {
+      "types": "./dist/src/kanban/index.d.ts",
+      "import": "./dist/kanban.esm.js",
+      "require": "./dist/kanban.js"
     }
   },
   "files": ["dist", "README.md", "LICENSE"],
