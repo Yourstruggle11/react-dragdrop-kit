@@ -19,5 +19,13 @@ export default tseslint.config([
       ecmaVersion: 2020,
       globals: globals.browser,
     },
+    settings: {
+      // Keep ESLint import resolution in sync with TS path aliases
+      'import/resolver': {
+        typescript: {
+          project: ['./tsconfig.app.json', './tsconfig.node.json'],
+        },
+      },
+    },
   },
 ])

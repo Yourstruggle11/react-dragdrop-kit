@@ -318,9 +318,10 @@ Built with:
 ## 📖 Documentation
 
 - [Kanban Board Guide](./docs/kanban.md)
+- [Known Issues & Limitations](./KNOWN_ISSUES.md)
 - [CHANGELOG](./CHANGELOG.md)
 - [Examples](./examples/)
-- [Demo Application](https://react-dragdrop-kit.netlify.app/)
+- [Demo Application](https://react-dragdrop-kit.netlify.app/) — open “Known Issues” from the sidebar
 
 ---
 
