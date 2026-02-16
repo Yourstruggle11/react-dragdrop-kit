@@ -2,7 +2,11 @@
  * Tests for Kanban reorder utilities
  */
 
-import { applyDragResult, reorderArray } from '../utils/reorder';
+import {
+  applyDragResult,
+  reorderArray,
+  normalizeReorderDestinationIndex,
+} from '../utils/reorder';
 import type { KanbanBoardState, DropResult } from '../types';
 
 describe('reorderArray', () => {
@@ -34,6 +38,30 @@ describe('reorderArray', () => {
     const items = ['a'];
     const result = reorderArray(items, 0, 0);
     expect(result).toEqual(['a']);
+  });
+});
+
+describe('normalizeReorderDestinationIndex', () => {
+  it('adjusts index when moving forward in the same list', () => {
+    const result = normalizeReorderDestinationIndex({
+      itemCount: 5,
+      sourceIndex: 1,
+      rawDestinationIndex: 4,
+      isSameList: true,
+    });
+
+    expect(result).toBe(3);
+  });
+
+  it('preserves append behavior for cross-list moves', () => {
+    const result = normalizeReorderDestinationIndex({
+      itemCount: 3,
+      sourceIndex: 0,
+      rawDestinationIndex: 3,
+      isSameList: false,
+    });
+
+    expect(result).toBe(3);
   });
 });
 

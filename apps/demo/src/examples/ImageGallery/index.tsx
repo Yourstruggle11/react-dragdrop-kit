@@ -1,11 +1,12 @@
-import { useState } from 'react';
-import { DragDropList, type OrderUpdate } from 'react-dragdrop-kit';
+import { useCallback, useState } from 'react';
+import { DragDropList } from 'react-dragdrop-kit';
 import { Grid, List, Download, Trash2, Star, Eye } from 'lucide-react';
 import { colors, borderRadius, shadows, transitions, typography, spacing } from '@/constants/designSystem';
-import { useThemeMode } from '@/contexts/ThemeContext';
+import { useThemeMode } from '@/contexts/useThemeMode';
 import toast from 'react-hot-toast';
 import { useDebouncedToast } from '@/hooks/useDebouncedToast';
 import CodeViewer from '@/components/CodeViewer';
+import { mergeReorderedSubset } from '@/utils/mergeReorderedSubset';
 
 interface GalleryImage {
 	id: string;
@@ -107,8 +108,19 @@ export default function ImageGalleryExample() {
 
 	const { showToast } = useDebouncedToast();
 
-const handleReorder = (reordered: GalleryImage[], _updates: OrderUpdate[]) => {
-		setImages(reordered);
+	const getFilteredImages = useCallback(
+		(sourceImages: GalleryImage[]) =>
+			filterCategory === 'all'
+				? sourceImages
+				: sourceImages.filter((img) => img.category === filterCategory),
+		[filterCategory]
+	);
+
+	const handleReorder = (reordered: GalleryImage[]) => {
+		setImages((prev) => {
+			const merged = mergeReorderedSubset(prev, getFilteredImages(prev), reordered);
+			return merged.map((image, index) => ({ ...image, position: index }));
+		});
 		showToast('Images reordered!');
 	};
 
@@ -129,10 +141,7 @@ const handleReorder = (reordered: GalleryImage[], _updates: OrderUpdate[]) => {
 
 	const categories = ['all', ...Array.from(new Set(images.map((img) => img.category)))];
 
-	const filteredImages =
-		filterCategory === 'all'
-			? images
-			: images.filter((img) => img.category === filterCategory);
+	const filteredImages = getFilteredImages(images);
 
 	const renderGridItem = (image: GalleryImage) => (
 		<div
@@ -720,3 +729,4 @@ function ImageGallery() {
 		</div>
 	);
 }
+

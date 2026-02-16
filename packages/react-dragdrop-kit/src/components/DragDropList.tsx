@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState, useCallback } from "react";
-import { combine } from "@atlaskit/pragmatic-drag-and-drop/combine";
 import { dropTargetForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
 import { DraggableItemWrapper } from "./DraggableItemWrapper";
 import type { DragDropListProps, DraggableItem } from "../types";
@@ -25,9 +24,19 @@ export function DragDropList<T extends DraggableItem>({
   dropIndicatorClassName = "",
   dropIndicatorStyle = {},
   dropIndicatorPosition = "bottom",
+  dragHandle,
+  selectedIds = [],
+  multiDragEnabled = false,
 }: DragDropListProps<T>) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const monitor = useDragDropMonitor({ items, onReorder, disabled });
+  useDragDropMonitor({
+    items,
+    onReorder,
+    disabled,
+    direction,
+    selectedIds,
+    multiDragEnabled,
+  });
   const [isDraggingOver, setIsDraggingOver] = useState(false);
 
   const getContainerStyles = (): React.CSSProperties => {
@@ -67,8 +76,8 @@ export function DragDropList<T extends DraggableItem>({
     const element = containerRef.current;
     if (!element || disabled) return;
 
-    return combine(createDropTarget(element), monitor);
-  }, [createDropTarget, monitor, disabled]);
+    return createDropTarget(element);
+  }, [createDropTarget, disabled]);
 
   return (
     <div
@@ -92,6 +101,8 @@ export function DragDropList<T extends DraggableItem>({
           dropIndicatorClassName={dropIndicatorClassName}
           dropIndicatorStyle={dropIndicatorStyle}
           dropIndicatorPosition={dropIndicatorPosition}
+          direction={direction}
+          dragHandle={dragHandle}
         >
           {renderItem(item, index)}
         </DraggableItemWrapper>

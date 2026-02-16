@@ -5,7 +5,7 @@
  */
 
 import React, { useMemo } from 'react';
-import type { KanbanBoardProps } from '../types';
+import type { KanbanBoardProps, KanbanCard, KanbanColumn } from '../types';
 import { KanbanContext } from '../context';
 import { KanbanColumnView } from './KanbanColumnView';
 import { KanbanCardView } from './KanbanCardView';
@@ -39,8 +39,8 @@ export function KanbanBoard({
     [state, dragState, isDragDisabled]
   );
 
-  const defaultGetCardKey = (card: any) => card.id;
-  const defaultGetColumnKey = (column: any) => column.id;
+  const defaultGetCardKey = (card: KanbanCard) => card.id;
+  const defaultGetColumnKey = (column: KanbanColumn) => column.id;
 
   const cardKeyExtractor = getCardKey || defaultGetCardKey;
   const columnKeyExtractor = getColumnKey || defaultGetColumnKey;
@@ -65,7 +65,7 @@ export function KanbanBoard({
           >
             {(columnProvided, columnSnapshot) => (
               <div
-                ref={columnProvided.innerRef as any}
+                ref={columnProvided.innerRef}
                 {...columnProvided.draggableProps}
                 style={{
                   minWidth: '250px',
@@ -81,7 +81,7 @@ export function KanbanBoard({
 
                 {/* Card drop zone */}
                 <div
-                  ref={(columnProvided as any).dropZoneRef}
+                  ref={columnProvided.dropZoneRef}
                   style={{
                     flex: 1,
                     minHeight: '100px',
@@ -104,7 +104,7 @@ export function KanbanBoard({
                       >
                         {(cardProvided, cardSnapshot) => (
                           <div
-                            ref={cardProvided.innerRef as any}
+                            ref={cardProvided.innerRef}
                             {...cardProvided.draggableProps}
                             {...cardProvided.dragHandleProps}
                           >

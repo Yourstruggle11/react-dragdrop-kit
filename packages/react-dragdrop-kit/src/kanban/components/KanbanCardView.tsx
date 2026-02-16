@@ -80,7 +80,7 @@ export function KanbanCardView({
       'aria-roledescription': 'draggable card',
       'aria-label': `${card.title}, press space to pick up`,
     },
-    innerRef: cardRef as React.RefObject<HTMLElement>,
+    innerRef: cardRef,
   };
 
   const snapshot: DragSnapshot = {

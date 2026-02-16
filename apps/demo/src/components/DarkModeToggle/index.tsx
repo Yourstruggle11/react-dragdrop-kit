@@ -1,5 +1,5 @@
 import { Moon, Sun } from 'lucide-react';
-import { useThemeMode } from '@/contexts/ThemeContext';
+import { useThemeMode } from '@/contexts/useThemeMode';
 import { colors, borderRadius, shadows, transitions } from '@/constants/designSystem';
 
 export default function DarkModeToggle() {
@@ -71,3 +71,4 @@ export default function DarkModeToggle() {
 		</button>
 	);
 }
+

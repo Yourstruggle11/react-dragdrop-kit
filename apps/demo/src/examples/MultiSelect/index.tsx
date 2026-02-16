@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { DragDropList } from 'react-dragdrop-kit';
-import type { OrderUpdate } from 'react-dragdrop-kit';
-import { useThemeMode } from '@/contexts/ThemeContext';
+import { useThemeMode } from '@/contexts/useThemeMode';
 import { colors, spacing, borderRadius, shadows, typography } from '@/constants/designSystem';
 import toast from 'react-hot-toast';
 import { useDebouncedToast } from '@/hooks/useDebouncedToast';
 import { CheckSquare, Square, Trash2, Copy, ArrowRight, Users, Filter } from 'lucide-react';
+import { mergeReorderedSubset } from '@/utils/mergeReorderedSubset';
 
 interface Contact {
 	id: string;
@@ -101,8 +101,19 @@ export default function MultiSelectExample() {
 
 	const { showToast } = useDebouncedToast();
 
-const handleReorder = (reordered: Contact[], _updates: OrderUpdate[]) => {
-		setContacts(reordered);
+	const getFilteredContacts = useCallback(
+		(sourceContacts: Contact[]) => {
+			if (filterDepartment === 'all') return sourceContacts;
+			return sourceContacts.filter((contact) => contact.department === filterDepartment);
+		},
+		[filterDepartment]
+	);
+
+	const handleReorder = (reordered: Contact[]) => {
+		setContacts((prev) => {
+			const merged = mergeReorderedSubset(prev, getFilteredContacts(prev), reordered);
+			return merged.map((contact, index) => ({ ...contact, position: index }));
+		});
 		showToast('Contacts reordered!');
 	};
 
@@ -138,7 +149,7 @@ const handleReorder = (reordered: Contact[], _updates: OrderUpdate[]) => {
 	};
 
 	const selectAll = () => {
-		const filteredContacts = getFilteredContacts();
+		const filteredContacts = getFilteredContacts(contacts);
 		setSelectedIds(new Set(filteredContacts.map(c => c.id)));
 		toast.success('All contacts selected!');
 	};
@@ -175,13 +186,8 @@ const handleReorder = (reordered: Contact[], _updates: OrderUpdate[]) => {
 		toast.success('Moved selected to top!');
 	};
 
-	const getFilteredContacts = () => {
-		if (filterDepartment === 'all') return contacts;
-		return contacts.filter(c => c.department === filterDepartment);
-	};
-
 	const departments = Array.from(new Set(contacts.map(c => c.department)));
-	const filteredContacts = getFilteredContacts();
+	const filteredContacts = getFilteredContacts(contacts);
 
 	const renderContact = (contact: Contact) => {
 		const isSelected = selectedIds.has(contact.id);
@@ -331,21 +337,20 @@ const handleReorder = (reordered: Contact[], _updates: OrderUpdate[]) => {
 					>
 						Click to select, Ctrl/Cmd+Click for multiple, Shift+Click for range selection
 					</p>
-					<div
-						style={{
-							padding: spacing.md,
-							background: isDark ? `${colors.info[500]}10` : `${colors.info[500]}10`,
-							border: `2px solid ${colors.info[500]}`,
-							borderRadius: borderRadius.md,
-							fontSize: typography.fontSize.sm,
-							color: isDark ? colors.info[300] : colors.info[700]
-						}}
-					>
-						<strong>Note:</strong> This example demonstrates visual multi-selection with bulk actions. The underlying
-						drag library currently supports dragging one item at a time. Use the "Move to Top" button to move all
-						selected items together, or drag individual items to reorder them.
-					</div>
+				<div
+					style={{
+						padding: spacing.md,
+						background: isDark ? `${colors.info[500]}10` : `${colors.info[500]}10`,
+						border: `2px solid ${colors.info[500]}`,
+						borderRadius: borderRadius.md,
+						fontSize: typography.fontSize.sm,
+						color: isDark ? colors.info[300] : colors.info[700]
+					}}
+				>
+					<strong>Note:</strong> Multi-drag is enabled. Select multiple contacts and drag any selected item
+					to move the whole selection block while preserving order.
 				</div>
+			</div>
 
 				{/* Bulk Actions Bar */}
 				{selectedIds.size > 0 && (
@@ -541,6 +546,8 @@ const handleReorder = (reordered: Contact[], _updates: OrderUpdate[]) => {
 					items={filteredContacts}
 					onReorder={handleReorder}
 					renderItem={renderContact}
+					selectedIds={Array.from(selectedIds)}
+					multiDragEnabled
 					containerStyle={{
 						display: 'flex',
 						flexDirection: 'column',
@@ -676,3 +683,4 @@ const handleReorder = (reordered: Contact[], _updates: OrderUpdate[]) => {
 		</div>
 	);
 }
+

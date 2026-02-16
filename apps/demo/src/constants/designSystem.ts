@@ -503,3 +503,4 @@ export const containers = {
 	'2xl': '1536px',
 	full: '100%',
 } as const;
+

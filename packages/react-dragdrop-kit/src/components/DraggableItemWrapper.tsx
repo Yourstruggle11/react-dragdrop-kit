@@ -4,6 +4,7 @@ import {
   draggable,
   dropTargetForElements,
 } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
+import { attachClosestEdge } from "@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge";
 import type { DraggableItemWrapperProps, DraggableItem } from "../types";
 import { defaultStyles } from "../styles/defaultStyles";
 
@@ -24,6 +25,8 @@ export function DraggableItemWrapper<T extends DraggableItem>({
   dropIndicatorClassName = "",
   dropIndicatorStyle = {},
   dropIndicatorPosition = "bottom",
+  direction = "vertical",
+  dragHandle,
 }: DraggableItemWrapperProps<T>) {
   const elementRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
@@ -53,9 +56,14 @@ export function DraggableItemWrapper<T extends DraggableItem>({
   const createDraggable = useCallback(
     (element: HTMLElement) => {
       if (disabled) return () => {};
+      const dragHandleElement = dragHandle
+        ? element.querySelector(dragHandle)
+        : undefined;
 
       return draggable({
         element,
+        dragHandle: dragHandleElement ?? undefined,
+        canDrag: () => !dragHandle || Boolean(dragHandleElement),
         getInitialData: () => ({
           type: DRAGGABLE_ITEM,
           id: item.id,
@@ -94,6 +102,7 @@ export function DraggableItemWrapper<T extends DraggableItem>({
     [
       item,
       index,
+      dragHandle,
       dragPreviewClassName,
       dragPreviewStyle,
       onDragStart,
@@ -108,14 +117,24 @@ export function DraggableItemWrapper<T extends DraggableItem>({
 
       return dropTargetForElements({
         element,
-        getData: () => ({
-          type: DRAGGABLE_ITEM,
-          id: item.id,
-          index,
-        }),
-        canDrop: (args: any) => args.source.data?.type === DRAGGABLE_ITEM,
+        getData: ({ input, element: targetElement }) => {
+          const baseData = {
+            type: DRAGGABLE_ITEM,
+            id: item.id,
+            index,
+          };
+          const allowedEdges =
+            direction === "horizontal" ? (["left", "right"] as const) : (["top", "bottom"] as const);
+
+          return attachClosestEdge(baseData, {
+            input,
+            element: targetElement,
+            allowedEdges: [...allowedEdges],
+          });
+        },
+        canDrop: ({ source }) => source.data?.type === DRAGGABLE_ITEM,
         getIsSticky: () => true,
-        onDragEnter: ({ source, self }: any) => {
+        onDragEnter: ({ source, self }) => {
           if (source.data?.id !== self.data?.id) {
             setIsHovered(true);
             if (showDropIndicator) {
@@ -133,7 +152,7 @@ export function DraggableItemWrapper<T extends DraggableItem>({
         },
       });
     },
-    [item.id, index, disabled, showDropIndicator, dropIndicatorPosition]
+    [item.id, index, direction, disabled, showDropIndicator, dropIndicatorPosition]
   );
 
   useEffect(() => {

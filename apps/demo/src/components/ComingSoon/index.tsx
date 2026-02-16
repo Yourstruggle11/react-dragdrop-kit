@@ -1,6 +1,6 @@
 import { Construction, Calendar, Bell } from 'lucide-react';
 import { colors, borderRadius, spacing, typography, shadows } from '../../constants/designSystem';
-import { useThemeMode } from '../../contexts/ThemeContext';
+import { useThemeMode } from '@/contexts/useThemeMode';
 
 export default function ComingSoon() {
 	const { mode } = useThemeMode();
@@ -166,3 +166,4 @@ export default function ComingSoon() {
 		</div>
 	);
 }
+

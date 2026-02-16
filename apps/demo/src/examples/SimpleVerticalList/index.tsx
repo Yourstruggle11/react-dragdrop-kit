@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { DragDropList } from 'react-dragdrop-kit';
-import type { OrderUpdate } from 'react-dragdrop-kit';
-import { useThemeMode } from '@/contexts/ThemeContext';
+import { useThemeMode } from '@/contexts/useThemeMode';
 import { colors, spacing, borderRadius, shadows, typography } from '@/constants/designSystem';
 import { useDebouncedToast } from '@/hooks/useDebouncedToast';
 import CodeViewer from '@/components/CodeViewer';
@@ -66,7 +65,7 @@ export default function SimpleVerticalListExample() {
 
 	const { showToast } = useDebouncedToast();
 
-const handleReorder = (reordered: ListItem[], _updates: OrderUpdate[]) => {
+const handleReorder = (reordered: ListItem[]) => {
 		setItems(reordered);
 		setDragCount(c => c + 1);
 		showToast('List reordered!');
@@ -276,3 +275,4 @@ const handleReorder = (reordered: ListItem[], _updates: OrderUpdate[]) => {
 		</div>
 	);
 }
+

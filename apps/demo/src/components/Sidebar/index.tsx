@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Menu, X, Search, Home, Book, Sparkles } from 'lucide-react';
 import { categories, examples, type ExampleCategory, searchExamples } from '@/constants/examples';
 import { colors, borderRadius, shadows, transitions, typography, spacing } from '@/constants/designSystem';
-import { useThemeMode } from '@/contexts/ThemeContext';
+import { useThemeMode } from '@/contexts/useThemeMode';
 import DarkModeToggle from '@/components/DarkModeToggle';
 
 interface SidebarProps {
@@ -544,3 +544,4 @@ export default function Sidebar({ activeExample, onExampleSelect, onHomeClick }:
 		</>
 	);
 }
+

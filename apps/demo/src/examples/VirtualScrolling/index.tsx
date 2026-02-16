@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import { DragDropList, type OrderUpdate } from 'react-dragdrop-kit';
 import { Zap, RefreshCw } from 'lucide-react';
 import { colors, borderRadius, shadows, transitions, typography, spacing } from '@/constants/designSystem';
-import { useThemeMode } from '@/contexts/ThemeContext';
+import { useThemeMode } from '@/contexts/useThemeMode';
 import toast from 'react-hot-toast';
 import { useDebouncedToast } from '@/hooks/useDebouncedToast';
 import CodeViewer from '@/components/CodeViewer';
@@ -477,3 +477,4 @@ function LargeList() {
 		</div>
 	);
 }
+

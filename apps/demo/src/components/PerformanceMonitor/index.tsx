@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Activity, Cpu, Clock, TrendingUp } from 'lucide-react';
 import { colors, borderRadius, shadows, typography, spacing } from '../../constants/designSystem';
-import { useThemeMode } from '../../contexts/ThemeContext';
+import { useThemeMode } from '@/contexts/useThemeMode';
 
 interface PerformanceMetrics {
 	fps: number;
@@ -400,3 +400,4 @@ export default function PerformanceMonitor({ onDragStart, onDragEnd }: Performan
 		</div>
 	);
 }
+

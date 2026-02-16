@@ -4,15 +4,19 @@ import { DragDropList } from "../components/DragDropList";
 import "@testing-library/jest-dom";
 import type { DraggableItem } from "../types";
 
+interface MockItem extends DraggableItem {
+  name: string;
+}
+
 describe("DragDropList", () => {
-  const mockItems: DraggableItem[] = [
+  const mockItems: MockItem[] = [
     { id: "1", position: 0, name: "Item 1" },
     { id: "2", position: 1, name: "Item 2" },
     { id: "3", position: 2, name: "Item 3" },
   ];
 
   const mockOnReorder = jest.fn();
-  const mockRenderItem = (item: DraggableItem) => <div>{item.name}</div>;
+  const mockRenderItem = (item: MockItem) => <div>{item.name}</div>;
 
   beforeEach(() => {
     jest.clearAllMocks();

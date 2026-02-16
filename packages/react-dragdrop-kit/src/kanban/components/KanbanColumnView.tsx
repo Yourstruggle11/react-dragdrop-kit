@@ -5,7 +5,6 @@
  */
 
 import React, { useRef, useEffect, useState, useCallback } from 'react';
-import { combine } from '@atlaskit/pragmatic-drag-and-drop/combine';
 import { draggable, dropTargetForElements } from '@atlaskit/pragmatic-drag-and-drop/element/adapter';
 import { attachClosestEdge } from '@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge';
 import type { KanbanColumnViewProps, DragProvided, DragSnapshot } from '../types';
@@ -105,9 +104,10 @@ export function KanbanColumnView({
       tabIndex: 0,
       role: 'button',
       'aria-roledescription': 'draggable column',
-      'aria-label': `${column.title}, press space to pick up`,
+      'aria-label': `${column.title}, ${cardIds.length} cards, press space to pick up`,
     },
-    innerRef: columnRef as React.RefObject<HTMLElement>,
+    innerRef: columnRef,
+    dropZoneRef,
   };
 
   const snapshot: DragSnapshot = {
@@ -116,10 +116,5 @@ export function KanbanColumnView({
   };
 
   // Pass both refs through provided
-  const providedWithDropZone = {
-    ...provided,
-    dropZoneRef,
-  };
-
-  return <>{children(providedWithDropZone as any, snapshot)}</>;
+  return <>{children(provided, snapshot)}</>;
 }

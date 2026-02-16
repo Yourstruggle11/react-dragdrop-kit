@@ -8,6 +8,7 @@ import { useState, useEffect } from 'react';
 import { monitorForElements } from '@atlaskit/pragmatic-drag-and-drop/element/adapter';
 import { extractClosestEdge } from '@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge';
 import type { KanbanDragState, DropResult, DragLocation, KanbanBoardState } from '../types';
+import { normalizeReorderDestinationIndex } from '../utils/reorder';
 
 const KANBAN_CARD = 'kanban-card';
 const KANBAN_COLUMN = 'kanban-column';
@@ -73,24 +74,32 @@ export function useKanbanDnd({ onDragStart, onDragEnd, state, disabled }: UseKan
 
           if (columnTarget) {
             const destColumnId = columnTarget.data.columnId as string;
-            const cardTarget = dropTargets.find((target) =>
-              target.data.type === KANBAN_CARD && target.data.id !== sourceId
-            );
+            const sourceColumn = state.columns.find((column) => column.id === sourceColumnId);
+            const destColumn = state.columns.find((column) => column.id === destColumnId);
+            if (sourceColumn && destColumn) {
+              const cardTarget = dropTargets.find((target) =>
+                target.data.type === KANBAN_CARD && target.data.id !== sourceId
+              );
 
-            if (cardTarget) {
-              // Dropping on another card
-              const destIndex = cardTarget.data.index as number;
-              const edge = extractClosestEdge(cardTarget);
+              let rawDestinationIndex = destColumn.cardIds.length;
+              if (cardTarget) {
+                // Dropping on another card
+                const destIndex = cardTarget.data.index as number;
+                const edge = extractClosestEdge(cardTarget.data);
+                rawDestinationIndex = edge === 'bottom' ? destIndex + 1 : destIndex;
+              }
+
+              const isSameColumn = sourceColumnId === destColumnId;
+              const normalizedIndex = normalizeReorderDestinationIndex({
+                itemCount: isSameColumn ? sourceColumn.cardIds.length : destColumn.cardIds.length,
+                sourceIndex,
+                rawDestinationIndex,
+                isSameList: isSameColumn,
+              });
 
               destination = {
                 columnId: destColumnId,
-                index: edge === 'bottom' ? destIndex + 1 : destIndex,
-              };
-            } else {
-              // Dropping in empty column
-              destination = {
-                columnId: destColumnId,
-                index: 0,
+                index: normalizedIndex,
               };
             }
           }
@@ -102,10 +111,17 @@ export function useKanbanDnd({ onDragStart, onDragEnd, state, disabled }: UseKan
 
           if (columnTarget) {
             const destIndex = columnTarget.data.index as number;
-            const edge = extractClosestEdge(columnTarget);
+            const edge = extractClosestEdge(columnTarget.data);
+            const rawDestinationIndex =
+              edge === 'bottom' || edge === 'right' ? destIndex + 1 : destIndex;
 
             destination = {
-              index: edge === 'bottom' || edge === 'right' ? destIndex + 1 : destIndex,
+              index: normalizeReorderDestinationIndex({
+                itemCount: state.columns.length,
+                sourceIndex,
+                rawDestinationIndex,
+                isSameList: true,
+              }),
             };
           }
         }

@@ -1,7 +1,7 @@
 import React from 'react';
 import type { Example } from '@/constants/examples';
 import { colors, borderRadius, spacing, typography, shadows } from '@/constants/designSystem';
-import { useThemeMode } from '@/contexts/ThemeContext';
+import { useThemeMode } from '@/contexts/useThemeMode';
 import { ArrowLeft, ExternalLink } from 'lucide-react';
 
 interface ExampleWrapperProps {
@@ -148,3 +148,4 @@ export default function ExampleWrapper({ example, children, onBack }: ExampleWra
 		</div>
 	);
 }
+

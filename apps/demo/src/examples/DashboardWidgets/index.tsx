@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { DragDropList } from 'react-dragdrop-kit';
-import type { OrderUpdate } from 'react-dragdrop-kit';
-import { useThemeMode } from '@/contexts/ThemeContext';
+import { useThemeMode } from '@/contexts/useThemeMode';
 import { colors, spacing, borderRadius, shadows, typography } from '@/constants/designSystem';
 import toast from 'react-hot-toast';
 import { useDebouncedToast } from '@/hooks/useDebouncedToast';
@@ -22,19 +21,91 @@ import {
 	MoreVertical,
 } from 'lucide-react';
 
-type WidgetType = 'stats' | 'chart' | 'list' | 'calendar' | 'activity';
 type WidgetSize = 'small' | 'medium' | 'large';
 
-interface Widget {
+type OrderStatus = 'completed' | 'pending' | 'cancelled';
+type ActivityKind = 'user' | 'order' | 'payment' | 'comment';
+
+interface StatsData {
+	value: string;
+	change: string;
+	trend: 'up' | 'down';
+	progress?: number;
+}
+
+interface ChartData {
+	chartType: 'bar' | 'pie';
+	values: number[];
+}
+
+interface OrderItem {
+	id: number;
+	name: string;
+	amount: string;
+	status: OrderStatus;
+}
+
+interface ListData {
+	items: OrderItem[];
+}
+
+interface ActivityItem {
+	id: number;
+	action: string;
+	time: string;
+	type: ActivityKind;
+}
+
+interface ActivityData {
+	activities: ActivityItem[];
+}
+
+interface CalendarEvent {
+	id: number;
+	title: string;
+	date: string;
+	color: string;
+}
+
+interface CalendarData {
+	events: CalendarEvent[];
+}
+
+interface BaseWidget {
 	id: string;
 	position: number;
 	title: string;
-	type: WidgetType;
 	size: WidgetSize;
 	icon: React.ReactNode;
-	data?: any;
 	color: string;
 }
+
+interface StatsWidget extends BaseWidget {
+	type: 'stats';
+	data: StatsData;
+}
+
+interface ChartWidget extends BaseWidget {
+	type: 'chart';
+	data: ChartData;
+}
+
+interface ListWidget extends BaseWidget {
+	type: 'list';
+	data: ListData;
+}
+
+interface ActivityWidget extends BaseWidget {
+	type: 'activity';
+	data: ActivityData;
+}
+
+interface CalendarWidget extends BaseWidget {
+	type: 'calendar';
+	data: CalendarData;
+}
+
+type Widget = StatsWidget | ChartWidget | ListWidget | ActivityWidget | CalendarWidget;
 
 // Icons are imported directly where needed
 
@@ -148,7 +219,7 @@ export default function DashboardWidgetsExample() {
 	const [expandedWidgets, setExpandedWidgets] = useState<Set<string>>(new Set());
 	const { showToast } = useDebouncedToast();
 
-const handleReorder = (reordered: Widget[], _updates: OrderUpdate[]) => {
+const handleReorder = (reordered: Widget[]) => {
 		setWidgets(reordered);
 		showToast('Dashboard layout updated!');
 	};
@@ -165,7 +236,7 @@ const toggleExpand = (widgetId: string) => {
 		});
 	};
 
-const refreshWidget = (_widgetId: string) => {
+const refreshWidget = () => {
 		toast.success('Widget refreshed!');
 	};
 
@@ -347,7 +418,7 @@ const refreshWidget = (_widgetId: string) => {
 				return (
 					<div style={{ padding: spacing.lg }}>
 						<div style={{ display: 'flex', flexDirection: 'column', gap: spacing.sm }}>
-							{widget.data.items.map((item: any) => (
+							{widget.data.items.map((item) => (
 								<div
 									key={item.id}
 									style={{
@@ -410,7 +481,7 @@ const refreshWidget = (_widgetId: string) => {
 				return (
 					<div style={{ padding: spacing.lg }}>
 						<div style={{ display: 'flex', flexDirection: 'column', gap: spacing.md }}>
-							{widget.data.activities.map((activity: any) => (
+							{widget.data.activities.map((activity) => (
 								<div key={activity.id} style={{ display: 'flex', gap: spacing.md }}>
 									<div
 										style={{
@@ -450,7 +521,7 @@ const refreshWidget = (_widgetId: string) => {
 				return (
 					<div style={{ padding: spacing.lg }}>
 						<div style={{ display: 'flex', flexDirection: 'column', gap: spacing.md }}>
-							{widget.data.events.map((event: any) => (
+							{widget.data.events.map((event) => (
 								<div
 									key={event.id}
 									style={{
@@ -534,7 +605,7 @@ const refreshWidget = (_widgetId: string) => {
 					</div>
 					<div style={{ display: 'flex', alignItems: 'center', gap: spacing.xs }}>
 						<button
-							onClick={() => refreshWidget(widget.id)}
+							onClick={() => refreshWidget()}
 							style={{
 								padding: spacing.xs,
 								background: 'transparent',
@@ -802,3 +873,4 @@ const refreshWidget = (_widgetId: string) => {
 		</div>
 	);
 }
+

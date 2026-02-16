@@ -5,7 +5,7 @@ import KnownIssuesExample from '@/examples/KnownIssues';
 import ExampleWrapper from '@/components/ExampleWrapper';
 import ComingSoon from '@/components/ComingSoon';
 import { getExampleById } from '@/constants/examples';
-import { useThemeMode } from '@/contexts/ThemeContext';
+import { useThemeMode } from '@/contexts/useThemeMode';
 import { colors } from '@/constants/designSystem';
 
 // Import examples
@@ -20,6 +20,12 @@ import DragHandleExample from '@/examples/DragHandle';
 import GridLayoutExample from '@/examples/GridLayout';
 import SimpleVerticalListExample from '@/examples/SimpleVerticalList';
 import HorizontalListExample from '@/examples/HorizontalList';
+import CustomPreviewExample from '@/examples/CustomPreview';
+import DropIndicatorExample from '@/examples/DropIndicator';
+import BasicKanbanExample from '@/examples/BasicKanban';
+import RichKanbanExample from '@/examples/RichKanban';
+import SwimlanesKanbanExample from '@/examples/SwimlanesKanban';
+import WipLimitsKanbanExample from '@/examples/WipLimitsKanban';
 
 export default function App() {
 	const { mode } = useThemeMode();
@@ -34,14 +40,16 @@ export default function App() {
 		};
 
 		if (activeView === 'home') {
-			document.title = 'react-dragdrop-kit Demo — Sortable Lists, Grids & Kanban';
-			setDescription('Interactive demo of react-dragdrop-kit — sortable lists, grids, and Kanban with great performance.');
+			document.title = 'react-dragdrop-kit Demo - Sortable Lists, Grids & Kanban';
+			setDescription(
+				'Interactive demo of react-dragdrop-kit - sortable lists, grids, and Kanban with great performance.'
+			);
 			return;
 		}
 		const ex = getExampleById(activeView);
 		if (ex) {
-			document.title = `${ex.title} — react-dragdrop-kit Demo`;
-			setDescription(`${ex.description} — react-dragdrop-kit demo example.`);
+			document.title = `${ex.title} - react-dragdrop-kit Demo`;
+			setDescription(`${ex.description} - react-dragdrop-kit demo example.`);
 		}
 	}, [activeView]);
 
@@ -74,6 +82,8 @@ export default function App() {
 		const exampleComponents: Record<string, React.ReactNode> = {
 			'simple-vertical-list': <SimpleVerticalListExample />,
 			'horizontal-list': <HorizontalListExample />,
+			'custom-preview': <CustomPreviewExample />,
+			'drop-indicator': <DropIndicatorExample />,
 			'todo-list': <TodoListExample />,
 			'image-gallery': <ImageGalleryExample />,
 			'music-playlist': <MusicPlaylistExample />,
@@ -83,6 +93,10 @@ export default function App() {
 			'multi-select': <MultiSelectExample />,
 			'drag-handle': <DragHandleExample />,
 			'grid-view': <GridLayoutExample />,
+			'basic-kanban': <BasicKanbanExample />,
+			'rich-kanban': <RichKanbanExample />,
+			'swimlanes-kanban': <SwimlanesKanbanExample />,
+			'wip-limits-kanban': <WipLimitsKanbanExample />
 		};
 
 		const ExampleComponent = exampleComponents[example.id] || <ComingSoon />;
@@ -100,20 +114,16 @@ export default function App() {
 				display: 'flex',
 				minHeight: '100vh',
 				background: bgColor,
-				fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif",
+				fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif"
 			}}
 		>
-			<Sidebar
-				activeExample={activeView}
-				onExampleSelect={handleExampleSelect}
-				onHomeClick={handleHomeClick}
-			/>
+			<Sidebar activeExample={activeView} onExampleSelect={handleExampleSelect} onHomeClick={handleHomeClick} />
 
 			<main
 				style={{
 					flex: 1,
 					marginLeft: '320px',
-					overflowX: 'hidden',
+					overflowX: 'hidden'
 				}}
 				className="main-content"
 			>

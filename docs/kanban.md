@@ -1,17 +1,17 @@
-# Kanban Board
+# Kanban Board Guide
 
-A headless, accessible Kanban board implementation for React, powered by `@atlaskit/pragmatic-drag-and-drop`.
+`react-dragdrop-kit/kanban` provides a headless, controlled Kanban implementation for React.
+It is designed for flexibility in styling while keeping drag/drop state predictable.
 
-## Features
+## What you get
 
-- 🎯 **Headless Architecture**: Full control over styling and presentation
-- ♿ **Accessible**: Built-in screen reader announcements and keyboard navigation
-- 🎨 **Flexible**: Works with any UI framework (Tailwind, MUI, Chakra, etc.)
-- 📦 **Lightweight**: ~10-13 KB minified + gzipped
-- 🔄 **Cross-Column Dragging**: Easily move cards between columns
-- 🔀 **Column Reordering**: Drag columns to reorganize your board
-- ⌨️ **Keyboard Support**: Full keyboard navigation (coming soon)
-- 📱 **Touch Friendly**: Works seamlessly on mobile devices
+- Card movement within columns
+- Card movement across columns
+- Column reordering
+- Controlled state model
+- Headless rendering with render functions
+- Accessibility announcement helpers
+- Keyboard drag-reorder planned (not fully shipped yet)
 
 ## Installation
 
@@ -19,175 +19,172 @@ A headless, accessible Kanban board implementation for React, powered by `@atlas
 npm install react-dragdrop-kit
 ```
 
-## Quick Start
+## Imports
 
 ```tsx
-import { useState, useCallback } from 'react';
 import {
   KanbanBoard,
+  KanbanColumnView,
+  KanbanCardView,
+  applyDragResult,
+  reorderArray,
+  AnnouncerProvider,
+  useAnnouncer,
+  announcements,
+  type KanbanBoardState,
+  type KanbanColumn,
+  type KanbanCard,
+  type DropResult,
+} from "react-dragdrop-kit/kanban";
+```
+
+## State model
+
+```ts
+type KanbanBoardState = {
+  columns: KanbanColumn[];
+  cards: Record<string, KanbanCard>;
+};
+
+type KanbanColumn = {
+  id: string;
+  title: string;
+  cardIds: string[];
+  [key: string]: any;
+};
+
+type KanbanCard = {
+  id: string;
+  title: string;
+  [key: string]: any;
+};
+```
+
+### Why normalized state
+
+- Cross-column moves only update `cardIds` arrays.
+- Card lookup stays O(1) by ID.
+- State updates remain straightforward and testable.
+
+## Quick start
+
+```tsx
+import { useCallback, useState } from "react";
+import {
+  KanbanBoard,
+  applyDragResult,
   type KanbanBoardState,
   type DropResult,
-  applyDragResult,
-} from 'react-dragdrop-kit/kanban';
+} from "react-dragdrop-kit/kanban";
 
-function App() {
+export default function Board() {
   const [state, setState] = useState<KanbanBoardState>({
     columns: [
-      {
-        id: 'todo',
-        title: 'To Do',
-        cardIds: ['task-1', 'task-2'],
-      },
-      {
-        id: 'in-progress',
-        title: 'In Progress',
-        cardIds: ['task-3'],
-      },
-      {
-        id: 'done',
-        title: 'Done',
-        cardIds: [],
-      },
+      { id: "todo", title: "To Do", cardIds: ["task-1", "task-2"] },
+      { id: "in-progress", title: "In Progress", cardIds: ["task-3"] },
+      { id: "done", title: "Done", cardIds: [] },
     ],
     cards: {
-      'task-1': { id: 'task-1', content: 'Design landing page' },
-      'task-2': { id: 'task-2', content: 'Implement auth' },
-      'task-3': { id: 'task-3', content: 'Fix bug in checkout' },
+      "task-1": { id: "task-1", title: "Design landing page" },
+      "task-2": { id: "task-2", title: "Implement auth" },
+      "task-3": { id: "task-3", title: "Fix checkout bug" },
     },
   });
 
-  const handleDragEnd = useCallback((result: DropResult) => {
-    if (!result.destination) return;
-    const newState = applyDragResult(state, result);
-    setState(newState);
-  }, [state]);
-
-  const renderColumn = useCallback((column, provided, snapshot) => (
-    <div style={{ padding: '12px', background: '#f3f4f6' }}>
-      {column.title}
-    </div>
-  ), []);
-
-  const renderCard = useCallback((card, provided, snapshot) => (
-    <div style={{ padding: '12px', background: '#fff', border: '1px solid #e5e7eb' }}>
-      {card.content}
-    </div>
-  ), []);
+  const handleDragEnd = useCallback(
+    (result: DropResult, stateBefore: KanbanBoardState) => {
+      if (!result.destination) return;
+      setState(applyDragResult(stateBefore, result));
+    },
+    []
+  );
 
   return (
     <KanbanBoard
       state={state}
       onDragEnd={handleDragEnd}
-      renderColumn={renderColumn}
-      renderCard={renderCard}
+      renderColumn={(column) => <div>{column.title}</div>}
+      renderCard={(card) => <div>{card.title}</div>}
     />
   );
 }
 ```
 
-## Data Model
-
-The Kanban board uses a **normalized state structure** for optimal performance:
-
-```typescript
-type KanbanBoardState = {
-  columns: KanbanColumn[];      // Ordered list of columns
-  cards: Record<Id, Card>;      // Flat lookup for all cards
-}
-
-type KanbanColumn = {
-  id: string;
-  title: string;
-  cardIds: string[];           // References to cards in this column
-}
-
-type KanbanCard = {
-  id: string;
-  content: string;
-  // ... any other custom fields
-}
-```
-
-**Why normalized state?**
-- Prevents deep nesting (`columns[i].cards[j]`)
-- Easy to move cards: just update `cardIds` array
-- Single source of truth for card data
-- Better performance with large datasets
-
-## API Reference
-
-### `KanbanBoard`
-
-The high-level component that renders a complete Kanban board.
+## KanbanBoard API
 
 ```tsx
 <KanbanBoard
   state={state}
   onDragEnd={handleDragEnd}
+  onDragStart={handleDragStart}
   renderColumn={renderColumn}
   renderCard={renderCard}
-  onDragStart={handleDragStart}
   getCardKey={(card) => card.id}
   getColumnKey={(column) => column.id}
   isDragDisabled={(id, type) => false}
-  className="my-kanban"
-  style={{ gap: '16px' }}
+  className="board"
+  style={{ gap: "16px" }}
 />
 ```
 
-#### Props
-
 | Prop | Type | Required | Description |
-|------|------|----------|-------------|
-| `state` | `KanbanBoardState` | ✅ | The current board state |
-| `onDragEnd` | `(result: DropResult) => void` | ✅ | Callback fired when drag ends |
-| `renderColumn` | `(column, provided, snapshot) => ReactNode` | ✅ | Render function for column header |
-| `renderCard` | `(card, provided, snapshot) => ReactNode` | ✅ | Render function for cards |
-| `onDragStart` | `(draggable: { id, type }) => void` | ❌ | Callback fired when drag starts |
-| `getCardKey` | `(card) => string` | ❌ | Custom key extractor for cards (default: `card.id`) |
-| `getColumnKey` | `(column) => string` | ❌ | Custom key extractor for columns (default: `column.id`) |
-| `isDragDisabled` | `(id, type) => boolean` | ❌ | Disable dragging for specific items |
-| `className` | `string` | ❌ | CSS class for the board container |
-| `style` | `CSSProperties` | ❌ | Inline styles for the board container |
+| --- | --- | --- | --- |
+| `state` | `KanbanBoardState` | Yes | Controlled board state. |
+| `onDragEnd` | `(result: DropResult, stateBefore: KanbanBoardState) => void` | Yes | Called when drag ends. |
+| `onDragStart` | `(draggable: { id: Id; type: "CARD" \| "COLUMN" }) => void` | No | Called when drag starts. |
+| `renderColumn` | `(column, provided, snapshot) => ReactNode` | Yes | Render function for each column container/header. |
+| `renderCard` | `(card, provided, snapshot) => ReactNode` | Yes | Render function for each card. |
+| `getCardKey` | `(card) => string` | No | Custom card key extractor. Defaults to `card.id`. |
+| `getColumnKey` | `(column) => string` | No | Custom column key extractor. Defaults to `column.id`. |
+| `isDragDisabled` | `(id, type) => boolean` | No | Disable drag for specific cards/columns. |
+| `className` | `string` | No | Class for board root. |
+| `style` | `React.CSSProperties` | No | Inline style for board root. |
 
-### `DropResult`
+## DropResult structure
 
-The result object passed to `onDragEnd`:
-
-```typescript
+```ts
 type DropResult = {
-  type: 'CARD' | 'COLUMN';
+  type: "CARD" | "COLUMN";
   draggableId: string;
   source: {
-    columnId?: string;  // undefined for column drags
+    columnId?: string;
     index: number;
   };
   destination?: {
-    columnId?: string;  // undefined for column drags
+    columnId?: string;
     index: number;
   };
-}
+};
 ```
 
-### `applyDragResult(state, result)`
+## State helper utilities
 
-A helper function that applies a drop result to your state:
+### applyDragResult
 
 ```tsx
-const newState = applyDragResult(currentState, result);
-setState(newState);
+const nextState = applyDragResult(stateBefore, result);
+setState(nextState);
 ```
 
-This handles:
-- Moving cards within the same column
-- Moving cards between columns
-- Reordering columns
+Handles:
 
-### Headless Components
+- Card reorder within same column
+- Card move to different column
+- Column reorder
 
-For more control, use the low-level headless components:
+### reorderArray
 
-#### `KanbanColumnView`
+Utility for generic array reordering.
+
+```ts
+const reordered = reorderArray(items, startIndex, endIndex);
+```
+
+## Headless primitives
+
+Use these when you need fine-grained structure or integration.
+
+### KanbanColumnView
 
 ```tsx
 <KanbanColumnView
@@ -198,24 +195,20 @@ For more control, use the low-level headless components:
 >
   {(provided, snapshot) => (
     <div ref={provided.innerRef} {...provided.draggableProps}>
-      <div {...provided.dragHandleProps}>
-        {/* Column header */}
-      </div>
-      <div ref={provided.dropZoneRef}>
-        {/* Card list */}
-      </div>
+      <div {...provided.dragHandleProps}>{column.title}</div>
+      <div ref={provided.dropZoneRef}>{/* cards here */}</div>
     </div>
   )}
 </KanbanColumnView>
 ```
 
-#### `KanbanCardView`
+### KanbanCardView
 
 ```tsx
 <KanbanCardView
   card={card}
   index={cardIndex}
-  columnId={columnId}
+  columnId={column.id}
   isDragDisabled={false}
 >
   {(provided, snapshot) => (
@@ -224,136 +217,100 @@ For more control, use the low-level headless components:
       {...provided.draggableProps}
       {...provided.dragHandleProps}
     >
-      {/* Card content */}
+      {card.title}
     </div>
   )}
 </KanbanCardView>
 ```
 
-## Styling
-
-The Kanban board is completely **headless** - you have full control over styling.
-
-### Example with Tailwind CSS
-
-```tsx
-const renderColumn = (column, provided, snapshot) => (
-  <div className={cn(
-    "px-4 py-3 bg-gray-100 rounded-t-lg font-semibold",
-    snapshot.isDragging && "opacity-50"
-  )}>
-    {column.title}
-  </div>
-);
-
-const renderCard = (card, provided, snapshot) => (
-  <div className={cn(
-    "p-3 bg-white rounded-md border border-gray-200",
-    snapshot.isDragging && "shadow-xl ring-2 ring-blue-500"
-  )}>
-    {card.content}
-  </div>
-);
-```
-
-### Drag States
-
-Both `renderColumn` and `renderCard` receive a `snapshot` object:
-
-```typescript
-type DragSnapshot = {
-  isDragging: boolean;
-}
-```
-
-Use this to style items during drag:
-
-```tsx
-const renderCard = (card, provided, snapshot) => (
-  <div style={{
-    opacity: snapshot.isDragging ? 0.5 : 1,
-    transform: snapshot.isDragging ? 'rotate(5deg)' : 'none',
-  }}>
-    {card.content}
-  </div>
-);
-```
-
 ## Accessibility
 
-The Kanban board includes built-in accessibility features:
+### Announcements
 
-### Screen Reader Announcements
-
-Use the `AnnouncerProvider` to enable live region announcements:
+Wrap your board with `AnnouncerProvider` to enable live region announcements:
 
 ```tsx
-import { AnnouncerProvider } from 'react-dragdrop-kit/kanban';
+import { AnnouncerProvider } from "react-dragdrop-kit/kanban";
 
-function App() {
-  return (
-    <AnnouncerProvider>
-      <KanbanBoard {...props} />
-    </AnnouncerProvider>
-  );
-}
+<AnnouncerProvider>
+  <KanbanBoard {...props} />
+</AnnouncerProvider>;
 ```
 
-Announcements:
-- "Picked up Card X from Column Y"
-- "Moved Card X to Column Z at position N"
-- "Dropped Card X. No changes made." (on cancel)
+You can also use:
 
-### Keyboard Navigation
+- `useAnnouncer()` for custom announcement triggers
+- `announcements` helper messages for common drag states
 
-*(Coming soon in next release)*
+### Keyboard status
 
-- `Space/Enter`: Pick up focused card
-- `Arrow Keys`: Navigate between cards/columns
-- `Escape`: Cancel drag
+Keyboard drag-reorder is not fully shipped yet.
+Use pointer/touch interactions in production for now.
 
-## Advanced Usage
+## Styling patterns
 
-### Custom Card Data
+Because the API is headless, style with any system:
 
-Add any fields to your cards:
+- CSS modules
+- Tailwind
+- Styled Components
+- MUI/Chakra wrappers
 
-```typescript
-type CustomCard = {
-  id: string;
-  content: string;
-  assignee?: string;
-  priority?: 'low' | 'medium' | 'high';
-  dueDate?: Date;
-}
+Useful pattern:
 
-const state: KanbanBoardState<CustomCard> = {
-  columns: [...],
+```tsx
+const renderCard = (card, provided, snapshot) => (
+  <div
+    style={{
+      opacity: snapshot.isDragging ? 0.65 : 1,
+      boxShadow: snapshot.isDragging
+        ? "0 8px 24px rgba(0,0,0,0.15)"
+        : "0 1px 3px rgba(0,0,0,0.08)",
+    }}
+  >
+    {card.title}
+  </div>
+);
+```
+
+## Advanced usage
+
+### Custom card/column fields
+
+You can include additional fields directly in `cards` and `columns` entries.
+
+```ts
+const state: KanbanBoardState = {
+  columns: [
+    {
+      id: "todo",
+      title: "To Do",
+      cardIds: ["task-1"],
+      wipLimit: 3,
+    },
+  ],
   cards: {
-    'task-1': {
-      id: 'task-1',
-      content: 'Design landing page',
-      assignee: 'Alice',
-      priority: 'high',
-      dueDate: new Date('2025-10-15'),
+    "task-1": {
+      id: "task-1",
+      title: "Implement auth",
+      assignee: "Alice",
+      priority: "high",
     },
   },
 };
 ```
 
-### Disable Dragging
-
-Conditionally disable dragging for specific items:
+### Conditional drag disable
 
 ```tsx
 <KanbanBoard
   isDragDisabled={(id, type) => {
-    if (type === 'CARD') {
-      const card = state.cards[id];
-      return card.locked === true;
+    if (type === "CARD") {
+      const card = state.cards[id] as { locked?: boolean } | undefined;
+      return card?.locked === true;
     }
-    if (type === 'COLUMN') {
-      return id === 'done'; // Don't allow dragging "Done" column
+    if (type === "COLUMN") {
+      return id === "done";
     }
     return false;
   }}
@@ -361,88 +318,45 @@ Conditionally disable dragging for specific items:
 />
 ```
 
-### Virtual Scrolling
+### Large boards
 
-For large boards, use with `react-window` or `react-virtual`:
+For large card lists:
 
-```tsx
-import { FixedSizeList } from 'react-window';
-
-const renderColumn = (column, provided, snapshot) => (
-  <div>
-    <div {...provided.dragHandleProps}>{column.title}</div>
-    <FixedSizeList
-      height={600}
-      itemCount={column.cardIds.length}
-      itemSize={80}
-    >
-      {({ index, style }) => (
-        <div style={style}>
-          <KanbanCardView
-            card={state.cards[column.cardIds[index]]}
-            index={index}
-            columnId={column.id}
-          >
-            {renderCard}
-          </KanbanCardView>
-        </div>
-      )}
-    </FixedSizeList>
-  </div>
-);
-```
+1. Memoize `renderColumn` and `renderCard` with `useCallback`.
+2. Keep keys stable.
+3. Use virtualization for card-heavy columns.
 
 ## Migration from react-beautiful-dnd
 
-If you're coming from `react-beautiful-dnd`, here's how the APIs map:
-
 | react-beautiful-dnd | react-dragdrop-kit/kanban |
-|---------------------|---------------------------|
+| --- | --- |
 | `DragDropContext` | `KanbanBoard` |
 | `Droppable` | `KanbanColumnView` |
 | `Draggable` | `KanbanCardView` |
-| `onDragEnd` | `onDragEnd` (similar signature) |
+| `onDragEnd(result)` | `onDragEnd(result, stateBefore)` |
 
-**Key Differences:**
+Key differences:
 
-1. **State Structure**: Use normalized state (columns + cards object) instead of nested data
-2. **No Auto IDs**: You provide all IDs (no `draggableId`/`droppableId` auto-generation)
-3. **Render Props**: Use `renderColumn` and `renderCard` functions
+1. Normalized state (`columns` + `cards`) instead of nested arrays.
+2. IDs are owned by your app.
+3. Rendering uses explicit render functions.
 
-## Examples
+## Example references
 
-See the [demo app](../apps/demo/src/components/KanbanExample.tsx) for a complete working example.
+Repository examples:
 
-## Performance Tips
+- `../examples/kanban/basic-kanban.tsx`
+- `../examples/kanban/rich-cards-kanban.tsx`
+- `../examples/kanban/themed-kanban.tsx`
+- `../examples/kanban/accessible-kanban.tsx`
 
-1. **Memoize render functions**:
-   ```tsx
-   const renderCard = useCallback((card, provided, snapshot) => (
-     // ...
-   ), []);
-   ```
+Demo examples:
 
-2. **Use stable keys**:
-   ```tsx
-   getCardKey={(card) => card.id}
-   getColumnKey={(column) => column.id}
-   ```
-
-3. **Optimize large lists**:
-   - Consider virtual scrolling for 100+ cards
-   - Use `React.memo()` for card components
-   - Debounce expensive operations in `onDragEnd`
-
-## Bundle Size
-
-- **Core**: ~10-13 KB (minified + gzipped)
-- **No new dependencies**: Uses existing `@atlaskit/pragmatic-drag-and-drop`
-- **Tree-shakeable**: Import only what you need
+- `../apps/demo/src/examples/BasicKanban/index.tsx`
+- `../apps/demo/src/examples/RichKanban/index.tsx`
+- `../apps/demo/src/examples/SwimlanesKanban/index.tsx`
+- `../apps/demo/src/examples/WipLimitsKanban/index.tsx`
 
 ## License
 
 MIT
-
-## Credits
-
-Built with [`@atlaskit/pragmatic-drag-and-drop`](https://atlassian.design/components/pragmatic-drag-and-drop/about) - a performant, accessible drag-and-drop library by Atlassian.

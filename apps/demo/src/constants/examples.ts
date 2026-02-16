@@ -351,3 +351,4 @@ export function searchExamples(query: string): Example[] {
 			ex.tags.some((tag) => tag.toLowerCase().includes(lowerQuery))
 	);
 }
+
