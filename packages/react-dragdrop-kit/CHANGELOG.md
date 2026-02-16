@@ -5,6 +5,38 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.0] - 16-02-2026
+
+### Added
+- Optional `dragHandle` selector support in `DragDropList` to enable handle-only dragging.
+- Optional multi-item drag support in `DragDropList` via `selectedIds` and `multiDragEnabled`.
+- New reorder helpers for destination index normalization and grouped item movement.
+- New and expanded tests for monitor behavior, drag handles, and reorder edge cases.
+- Library ESLint configuration in `packages/react-dragdrop-kit/.eslintrc.cjs`.
+
+### Fixed
+- Boundary and last-item reorder instability in list drag-and-drop flows.
+- Same-list destination index drift in Kanban drag/drop index math.
+- Demo filtered-list reorder data-loss (hidden items are now preserved when reordering visible subsets).
+- Demo route mapping mismatches for planned examples.
+
+### Demo
+- Added routed examples:
+  - `custom-preview`
+  - `drop-indicator`
+  - `basic-kanban`
+  - `rich-kanban`
+  - `swimlanes-kanban`
+  - `wip-limits-kanban`
+
+### Changed
+- Synced docs and status files with current behavior:
+  - `README.md`
+  - `docs/kanban.md`
+  - `KNOWN_ISSUES.md`
+  - `DEMO_PROGRESS.md`
+- Maintained backward compatibility for existing API behavior and callback signatures.
+
 ## [1.2.0] - 09-10-2025
 
 ### Added - Kanban Board Feature

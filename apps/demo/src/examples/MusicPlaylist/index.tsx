@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { DragDropList, type OrderUpdate } from 'react-dragdrop-kit';
+import { DragDropList } from 'react-dragdrop-kit';
 import { Play, Pause, SkipForward, SkipBack, Heart, Clock, Music2, Shuffle, Repeat } from 'lucide-react';
 import { colors, borderRadius, shadows, transitions, typography, spacing } from '@/constants/designSystem';
-import { useThemeMode } from '@/contexts/ThemeContext';
+import { useThemeMode } from '@/contexts/useThemeMode';
 import toast from 'react-hot-toast';
 import { useDebouncedToast } from '@/hooks/useDebouncedToast';
 import CodeViewer from '@/components/CodeViewer';
@@ -107,7 +107,7 @@ export default function MusicPlaylistExample() {
 
 	const { showToast } = useDebouncedToast();
 
-const handleReorder = (reordered: Track[], _updates: OrderUpdate[]) => {
+const handleReorder = (reordered: Track[]) => {
 		setTracks(reordered);
 		// Update current track index if it was moved
 		if (currentTrack) {
@@ -681,3 +681,4 @@ function MusicPlaylist() {
 		</div>
 	);
 }
+

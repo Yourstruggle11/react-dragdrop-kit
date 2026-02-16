@@ -4,7 +4,7 @@
  * Functions for reordering cards and columns in a Kanban board.
  */
 
-import type { KanbanBoardState, KanbanColumn, DragLocation } from '../types';
+import type { KanbanBoardState, DragLocation } from '../types';
 
 /**
  * Reorder an array by moving an item from one index to another
@@ -14,6 +14,24 @@ export function reorderArray<T>(list: T[], startIndex: number, endIndex: number)
   const [removed] = result.splice(startIndex, 1);
   result.splice(endIndex, 0, removed);
   return result;
+}
+
+export function normalizeReorderDestinationIndex(params: {
+  itemCount: number;
+  sourceIndex: number;
+  rawDestinationIndex: number;
+  isSameList: boolean;
+}): number {
+  const { itemCount, sourceIndex, rawDestinationIndex, isSameList } = params;
+
+  if (itemCount <= 0) return 0;
+
+  const maxRaw = itemCount;
+  const clampedRaw = Math.max(0, Math.min(rawDestinationIndex, maxRaw));
+  const adjusted = isSameList && sourceIndex < clampedRaw ? clampedRaw - 1 : clampedRaw;
+  const maxFinal = isSameList ? itemCount - 1 : itemCount;
+
+  return Math.max(0, Math.min(adjusted, maxFinal));
 }
 
 /**

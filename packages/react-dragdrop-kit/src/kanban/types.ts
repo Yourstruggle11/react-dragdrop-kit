@@ -18,6 +18,7 @@ export interface KanbanCard {
   /** Card title */
   title: string;
   /** Additional custom fields */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [key: string]: any;
 }
 
@@ -32,6 +33,7 @@ export interface KanbanColumn {
   /** Ordered list of card IDs in this column */
   cardIds: Id[];
   /** Additional custom fields */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [key: string]: any;
 }
 
@@ -87,7 +89,9 @@ export interface DragProvided {
     'aria-roledescription': string;
   };
   /** Ref to attach to the draggable element */
-  innerRef: React.RefObject<HTMLElement>;
+  innerRef: React.RefObject<HTMLDivElement>;
+  /** Optional drop zone ref (used by column containers) */
+  dropZoneRef?: React.RefObject<HTMLDivElement>;
 }
 
 /**

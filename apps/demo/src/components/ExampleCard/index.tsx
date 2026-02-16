@@ -1,7 +1,7 @@
 import { ArrowRight, Star, Zap } from 'lucide-react';
 import type { Example } from '../../constants/examples';
 import { colors, borderRadius, shadows, transitions, typography, spacing } from '../../constants/designSystem';
-import { useThemeMode } from '../../contexts/ThemeContext';
+import { useThemeMode } from '@/contexts/useThemeMode';
 
 interface ExampleCardProps {
 	example: Example;
@@ -215,3 +215,4 @@ export default function ExampleCard({ example, onClick }: ExampleCardProps) {
 		</article>
 	);
 }
+

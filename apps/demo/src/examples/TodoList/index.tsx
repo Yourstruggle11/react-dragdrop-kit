@@ -1,11 +1,12 @@
-import { useState } from 'react';
-import { DragDropList, type OrderUpdate } from 'react-dragdrop-kit';
+import { useCallback, useState } from 'react';
+import { DragDropList } from 'react-dragdrop-kit';
 import { CheckCircle2, Circle, Plus, Trash2, Calendar } from 'lucide-react';
 import { colors, borderRadius, transitions, typography, spacing } from '@/constants/designSystem';
-import { useThemeMode } from '@/contexts/ThemeContext';
+import { useThemeMode } from '@/contexts/useThemeMode';
 import toast from 'react-hot-toast';
 import { useDebouncedToast } from '@/hooks/useDebouncedToast';
 import CodeViewer from '@/components/CodeViewer';
+import { mergeReorderedSubset } from '@/utils/mergeReorderedSubset';
 
 interface TodoItem {
 	id: string;
@@ -84,8 +85,37 @@ export default function TodoListExample() {
 
 	const { showToast } = useDebouncedToast();
 
-const handleReorder = (reordered: TodoItem[], _updates: OrderUpdate[]) => {
-		setTodos(reordered);
+	const getDisplayTodos = useCallback(
+		(sourceTodos: TodoItem[]) => {
+			let nextTodos = [...sourceTodos];
+
+			if (filterStatus === 'active') {
+				nextTodos = nextTodos.filter((todo) => !todo.completed);
+			} else if (filterStatus === 'completed') {
+				nextTodos = nextTodos.filter((todo) => todo.completed);
+			}
+
+			if (sortBy === 'priority') {
+				const priorityOrder = { high: 0, medium: 1, low: 2 };
+				nextTodos.sort((a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]);
+			} else if (sortBy === 'dueDate') {
+				nextTodos.sort((a, b) => {
+					if (!a.dueDate) return 1;
+					if (!b.dueDate) return -1;
+					return new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime();
+				});
+			}
+
+			return nextTodos;
+		},
+		[filterStatus, sortBy]
+	);
+
+	const handleReorder = (reordered: TodoItem[]) => {
+		setTodos((prev) => {
+			const merged = mergeReorderedSubset(prev, getDisplayTodos(prev), reordered);
+			return merged.map((todo, index) => ({ ...todo, position: index }));
+		});
 		showToast('Todo reordered!');
 	};
 
@@ -128,27 +158,7 @@ const handleReorder = (reordered: TodoItem[], _updates: OrderUpdate[]) => {
 		);
 	};
 
-	// Filter and sort todos
-	let displayTodos = [...todos];
-
-	// Apply filter
-	if (filterStatus === 'active') {
-		displayTodos = displayTodos.filter((todo) => !todo.completed);
-	} else if (filterStatus === 'completed') {
-		displayTodos = displayTodos.filter((todo) => todo.completed);
-	}
-
-	// Apply sort
-	if (sortBy === 'priority') {
-		const priorityOrder = { high: 0, medium: 1, low: 2 };
-		displayTodos.sort((a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]);
-	} else if (sortBy === 'dueDate') {
-		displayTodos.sort((a, b) => {
-			if (!a.dueDate) return 1;
-			if (!b.dueDate) return -1;
-			return new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime();
-		});
-	}
+	const displayTodos = getDisplayTodos(todos);
 
 	const renderTodoItem = (todo: TodoItem) => {
 		const isOverdue = todo.dueDate && new Date(todo.dueDate) < new Date() && !todo.completed;
@@ -577,3 +587,4 @@ function TodoApp() {
 		</div>
 	);
 }
+

@@ -1,10 +1,10 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { DragDropList } from 'react-dragdrop-kit';
-import type { OrderUpdate } from 'react-dragdrop-kit';
-import { useThemeMode } from '@/contexts/ThemeContext';
+import { useThemeMode } from '@/contexts/useThemeMode';
 import { colors, spacing, borderRadius, shadows, typography } from '@/constants/designSystem';
 import { useDebouncedToast } from '@/hooks/useDebouncedToast';
 import { Layout, Grid3x3, Image, Video, FileText, Music, Code, Database } from 'lucide-react';
+import { mergeReorderedSubset } from '@/utils/mergeReorderedSubset';
 
 type MediaType = 'image' | 'video' | 'document' | 'audio' | 'code' | 'data';
 
@@ -168,17 +168,23 @@ export default function GridLayoutExample() {
 
 	const { showToast } = useDebouncedToast();
 
-const handleReorder = (reordered: MediaItem[], _updates: OrderUpdate[]) => {
-		setItems(reordered);
+	const getFilteredItems = useCallback(
+		(sourceItems: MediaItem[]) => {
+			if (filterType === 'all') return sourceItems;
+			return sourceItems.filter((item) => item.type === filterType);
+		},
+		[filterType]
+	);
+
+	const handleReorder = (reordered: MediaItem[]) => {
+		setItems((prev) => {
+			const merged = mergeReorderedSubset(prev, getFilteredItems(prev), reordered);
+			return merged.map((item, index) => ({ ...item, position: index }));
+		});
 		showToast('Items reordered!');
 	};
 
-	const getFilteredItems = () => {
-		if (filterType === 'all') return items;
-		return items.filter(item => item.type === filterType);
-	};
-
-	const filteredItems = getFilteredItems();
+	const filteredItems = getFilteredItems(items);
 	const typeCount = (type: MediaType) => items.filter(item => item.type === type).length;
 
 	const renderItem = (item: MediaItem) => {
@@ -548,3 +554,4 @@ const handleReorder = (reordered: MediaItem[], _updates: OrderUpdate[]) => {
 		</div>
 	);
 }
+

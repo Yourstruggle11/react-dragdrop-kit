@@ -2,7 +2,7 @@ import { Github, Package, BookOpen, Zap, Shield, Code2 } from 'lucide-react';
 import { getFeaturedExamples, getNewExamples, categories } from '@/constants/examples';
 import ExampleCard from '@/components/ExampleCard';
 import { colors, borderRadius, shadows, typography, spacing, gradients } from '@/constants/designSystem';
-import { useThemeMode } from '@/contexts/ThemeContext';
+import { useThemeMode } from '@/contexts/useThemeMode';
 
 interface HomePageProps {
 	onExampleSelect: (exampleId: string) => void;
@@ -527,3 +527,4 @@ export default function HomePage({ onExampleSelect }: HomePageProps) {
 		</div>
 	);
 }
+

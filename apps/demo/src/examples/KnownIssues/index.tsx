@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { useThemeMode } from '@/contexts/ThemeContext';
+import { useThemeMode } from '@/contexts/useThemeMode';
 import { colors, spacing, borderRadius, typography, shadows } from '@/constants/designSystem';
 // Vite: import file contents as raw string
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -296,7 +296,7 @@ export default function KnownIssuesExample() {
 		flushUnordered();
 		flushOrdered();
 		return elements;
-	}, [issuesMarkdown, isDark]);
+	}, [isDark, borderColor, mutedText, textColor]);
 
 	return (
 		<div style={{ padding: spacing.xl }}>
@@ -316,4 +316,5 @@ export default function KnownIssuesExample() {
 		</div>
 	);
 }
+
 

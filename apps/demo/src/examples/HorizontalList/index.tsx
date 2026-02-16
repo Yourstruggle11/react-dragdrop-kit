@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { DragDropList } from 'react-dragdrop-kit';
-import type { OrderUpdate } from 'react-dragdrop-kit';
-import { useThemeMode } from '@/contexts/ThemeContext';
+import { useThemeMode } from '@/contexts/useThemeMode';
 import { colors, spacing, borderRadius, shadows, typography } from '@/constants/designSystem';
 import toast from 'react-hot-toast';
 import { useDebouncedToast } from '@/hooks/useDebouncedToast';
@@ -82,7 +81,7 @@ export default function HorizontalListExample() {
 	const [activeTab, setActiveTab] = useState<string>('1');
 	const { showToast } = useDebouncedToast();
 
-const handleReorder = (reordered: TabItem[], _updates: OrderUpdate[]) => {
+const handleReorder = (reordered: TabItem[]) => {
 		setTabs(reordered);
 		showToast('Tabs reordered!');
 	};
@@ -469,3 +468,4 @@ const handleReorder = (reordered: TabItem[], _updates: OrderUpdate[]) => {
 		</div>
 	);
 }
+

@@ -1,14 +1,5 @@
-import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
-
-type ThemeMode = 'light' | 'dark';
-
-interface ThemeContextType {
-	mode: ThemeMode;
-	toggleMode: () => void;
-	setMode: (mode: ThemeMode) => void;
-}
-
-const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
+import { useState, useEffect, type ReactNode } from 'react';
+import { ThemeContext, type ThemeMode } from './theme-context';
 
 interface ThemeProviderProps {
 	children: ReactNode;
@@ -53,10 +44,3 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
 	);
 }
 
-export function useThemeMode() {
-	const context = useContext(ThemeContext);
-	if (context === undefined) {
-		throw new Error('useThemeMode must be used within a ThemeProvider');
-	}
-	return context;
-}

@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { DragDropList } from 'react-dragdrop-kit';
-import type { OrderUpdate } from 'react-dragdrop-kit';
-import { useThemeMode } from '@/contexts/ThemeContext';
+import { useThemeMode } from '@/contexts/useThemeMode';
 import { colors, spacing, borderRadius, shadows, typography } from '@/constants/designSystem';
 import toast from 'react-hot-toast';
 import { useDebouncedToast } from '@/hooks/useDebouncedToast';
@@ -82,7 +81,7 @@ export default function DragHandleExample() {
 
 	const { showToast } = useDebouncedToast();
 
-const handleReorder = (reordered: Task[], _updates: OrderUpdate[]) => {
+const handleReorder = (reordered: Task[]) => {
 		setTasks(reordered);
 		showToast('Tasks reordered!');
 	};
@@ -415,9 +414,8 @@ const handleReorder = (reordered: Task[], _updates: OrderUpdate[]) => {
 						color: isDark ? colors.warning[300] : colors.warning[700],
 					}}
 				>
-					<strong>Note:</strong> The current version of react-dragdrop-kit doesn't support drag handles yet.
-					This example shows how interactive buttons work within draggable items. The entire item is draggable,
-					but clicking buttons (star, edit, eye, delete) triggers their respective actions instead of dragging.
+					<strong>Note:</strong> This demo uses the library's selector-based drag-handle support.
+					Only the grip handle starts drag, and all action buttons (star, edit, eye, delete) remain fully interactive.
 				</div>
 			</div>
 
@@ -474,6 +472,7 @@ const handleReorder = (reordered: Task[], _updates: OrderUpdate[]) => {
 				items={tasks}
 				onReorder={handleReorder}
 				renderItem={renderTask}
+				dragHandle="[data-drag-handle]"
 				containerStyle={{
 					display: 'flex',
 					flexDirection: 'column',
@@ -641,3 +640,4 @@ const handleReorder = (reordered: Task[], _updates: OrderUpdate[]) => {
 		</div>
 	);
 }
+

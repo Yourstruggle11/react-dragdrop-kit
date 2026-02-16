@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { DragDropList, type OrderUpdate } from 'react-dragdrop-kit';
+import { DragDropList } from 'react-dragdrop-kit';
 import { Type, Mail, Hash, ToggleLeft, Calendar, ChevronDown, Trash2, Eye, Code, Plus } from 'lucide-react';
 import { colors, borderRadius, shadows, transitions, typography, spacing } from '@/constants/designSystem';
-import { useThemeMode } from '@/contexts/ThemeContext';
+import { useThemeMode } from '@/contexts/useThemeMode';
 import toast from 'react-hot-toast';
 import { useDebouncedToast } from '@/hooks/useDebouncedToast';
 import CodeViewer from '@/components/CodeViewer';
@@ -59,7 +59,7 @@ export default function FormBuilderExample() {
 
 	const { showToast } = useDebouncedToast();
 
-const handleReorder = (reordered: FormField[], _updates: OrderUpdate[]) => {
+const handleReorder = (reordered: FormField[]) => {
 		setFields(reordered);
 		showToast('Fields reordered!');
 	};
@@ -617,3 +617,4 @@ const handleReorder = (reordered: FormField[], _updates: OrderUpdate[]) => {
 		</div>
 	);
 }
+

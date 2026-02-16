@@ -1,70 +1,95 @@
 # react-dragdrop-kit
 
-A flexible and lightweight **drag-and-drop toolkit for React**. Build **sortable lists, grids, and Kanban boards** with a simple, fully-controlled API and customizable previews. Powered by Atlassian's pragmatic drag-and-drop under the hood.
+A flexible, lightweight drag-and-drop toolkit for React.
+Build sortable lists, grids, and Kanban boards with a controlled API and minimal overhead.
 
-<p>
-  <a href="https://www.npmjs.com/package/react-dragdrop-kit"><img alt="npm" src="https://img.shields.io/npm/v/react-dragdrop-kit.svg?label=react-dragdrop-kit"></a>
-  <a href="https://www.npmjs.com/package/react-dragdrop-kit"><img alt="downloads" src="https://img.shields.io/npm/dm/react-dragdrop-kit.svg"></a>
-  <a href="https://github.com/Yourstruggle11/react-dragdrop-kit"><img alt="license" src="https://img.shields.io/badge/license-MIT-blue.svg"></a>
-</p>
+[![npm version](https://img.shields.io/npm/v/react-dragdrop-kit.svg)](https://www.npmjs.com/package/react-dragdrop-kit)
+[![npm downloads](https://img.shields.io/npm/dm/react-dragdrop-kit.svg)](https://www.npmjs.com/package/react-dragdrop-kit)
+[![bundle size](https://img.shields.io/bundlephobia/minzip/react-dragdrop-kit)](https://bundlephobia.com/package/react-dragdrop-kit)
+[![license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/Yourstruggle11/react-dragdrop-kit)
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/Yourstruggle11/react-dragdrop-kit)
 
----
+## Why this library
 
-## ✨ Features
+`react-dragdrop-kit` is designed around a controlled data model:
 
-### Drag & Drop Lists
-- 🔁 **Sortable** lists (vertical / horizontal)
-- 🎯 **Controlled**: you own the array, update on `onReorder`
-- 🧩 **Custom render** per item (cards, compact, detailed… anything)
-- 🧲 **Drop indicator** + optional **custom drag preview**
+- You own state.
+- The library reports drag intent and reorder results.
+- You decide what to persist and render.
 
-### 🆕 Kanban Boards (v1.2.0+)
-- 📋 **Full-featured Kanban board** with column and card management
-- 🔄 **Cross-column dragging** - Move cards between columns seamlessly
-- 🎨 **Headless architecture** - Complete styling control
-- ♿ **Accessible** - Screen reader announcements and keyboard support
-- 📱 **Touch-friendly** - Works on mobile devices
-- 🎯 **TypeScript-first** - Full type safety
+This keeps behavior predictable and easy to integrate with app-specific rules.
+
+## Feature overview
+
+### List and grid drag-and-drop
+
+- Vertical and horizontal list support
+- Controlled reorder callback: `onReorder(newItems, orderUpdates)`
+- Optional visual drop indicator
+- Optional custom drag preview style/class
+- Optional handle-only dragging via `dragHandle`
+- Optional multi-item drag with `selectedIds` + `multiDragEnabled`
+
+### Kanban module
+
+- Card reorder within columns
+- Card movement across columns
+- Column reordering
+- Headless rendering (`renderColumn`, `renderCard`)
+- Accessibility helpers (`AnnouncerProvider`, `useAnnouncer`, `announcements`)
+- Keyboard drag-reorder is planned, not fully shipped yet
 
 ### General
-- 🧪 **TypeScript** types included
-- ⚡ **Tiny bundles** (~5KB main, ~9KB Kanban)
-- 🎨 **Framework agnostic styling** - Works with Tailwind, MUI, Chakra, etc.
-- 📚 **Comprehensive documentation**
 
----
+- TypeScript-first API
+- Lightweight runtime and tree-shakeable exports
+- Built on `@atlaskit/pragmatic-drag-and-drop`
 
-## 📦 Install
+## Installation
 
 ```bash
-npm i react-dragdrop-kit
-# or
-yarn add react-dragdrop-kit
+npm install react-dragdrop-kit
 # or
 pnpm add react-dragdrop-kit
+# or
+yarn add react-dragdrop-kit
 ```
 
----
+## Package entry points
 
-## 🚀 Quick Start
+```ts
+import { DragDropList } from "react-dragdrop-kit";
+```
 
-### Sortable List
+```ts
+import { KanbanBoard, applyDragResult } from "react-dragdrop-kit/kanban";
+```
+
+## Quick start: sortable list
 
 ```tsx
 import { useState } from "react";
 import { DragDropList } from "react-dragdrop-kit";
 
-function App() {
-  const [items, setItems] = useState([
-    { id: "1", position: 0, title: "Learn React" },
-    { id: "2", position: 1, title: "Build awesome app" },
-    { id: "3", position: 2, title: "Deploy to production" },
+interface Todo {
+  id: string;
+  position: number;
+  title: string;
+}
+
+export default function TodoList() {
+  const [items, setItems] = useState<Todo[]>([
+    { id: "1", position: 0, title: "Design" },
+    { id: "2", position: 1, title: "Build" },
+    { id: "3", position: 2, title: "Ship" },
   ]);
 
   return (
     <DragDropList
       items={items}
-      onReorder={(next) => setItems(next.map((it, i) => ({ ...it, position: i })))}
+      onReorder={(next) =>
+        setItems(next.map((item, index) => ({ ...item, position: index })))
+      }
       renderItem={(item) => (
         <div style={{ padding: 12, border: "1px solid #e5e7eb", borderRadius: 8 }}>
           {item.title}
@@ -77,262 +102,188 @@ function App() {
 }
 ```
 
-### Kanban Board
+## Quick start: drag handle and multi-drag
 
 ```tsx
-import { useState } from 'react';
+<DragDropList
+  items={items}
+  onReorder={handleReorder}
+  renderItem={renderItem}
+  dragHandle="[data-drag-handle]"
+  selectedIds={selectedIds}
+  multiDragEnabled
+/>
+```
+
+Behavior notes:
+
+- `dragHandle` is optional. If provided, drag starts only from matching descendants.
+- `multiDragEnabled` is opt-in. Without it, behavior remains single-item drag.
+- `selectedIds` is consumed only when multi-drag is enabled.
+
+## Quick start: Kanban board
+
+```tsx
+import { useCallback, useState } from "react";
 import {
   KanbanBoard,
   applyDragResult,
-  AnnouncerProvider,
-} from 'react-dragdrop-kit/kanban';
+  type DropResult,
+  type KanbanBoardState,
+} from "react-dragdrop-kit/kanban";
 
-function App() {
-  const [state, setState] = useState({
+export default function Board() {
+  const [state, setState] = useState<KanbanBoardState>({
     columns: [
-      { id: 'todo', title: 'To Do', cardIds: ['task-1', 'task-2'] },
-      { id: 'done', title: 'Done', cardIds: [] },
+      { id: "todo", title: "To Do", cardIds: ["task-1", "task-2"] },
+      { id: "done", title: "Done", cardIds: [] },
     ],
     cards: {
-      'task-1': { id: 'task-1', title: 'Design landing page' },
-      'task-2': { id: 'task-2', title: 'Implement auth' },
+      "task-1": { id: "task-1", title: "Design landing page" },
+      "task-2": { id: "task-2", title: "Implement auth" },
     },
   });
 
-  const handleDragEnd = (result) => {
-    if (!result.destination) return;
-    setState(applyDragResult(state, result));
-  };
-
-  return (
-    <AnnouncerProvider>
-      <KanbanBoard
-        state={state}
-        onDragEnd={handleDragEnd}
-        renderColumn={(col) => <div style={{ padding: 16 }}>{col.title}</div>}
-        renderCard={(card) => (
-          <div style={{ padding: 12, background: '#fff', borderRadius: 8 }}>
-            {card.title}
-          </div>
-        )}
-      />
-    </AnnouncerProvider>
+  const handleDragEnd = useCallback(
+    (result: DropResult, stateBefore: KanbanBoardState) => {
+      if (!result.destination) return;
+      setState(applyDragResult(stateBefore, result));
+    },
+    []
   );
-}
-```
-
----
-
-## 🎨 Styled Examples
-
-### With Tailwind CSS
-
-```tsx
-import { DragDropList } from "react-dragdrop-kit";
-
-export default function TailwindExample() {
-  const [items, setItems] = useState([
-    { id: "1", position: 0, name: "Dashboard", icon: "📊" },
-    { id: "2", position: 1, name: "Projects",  icon: "📁" },
-    { id: "3", position: 2, name: "Team",      icon: "👥" },
-  ]);
 
   return (
-    <DragDropList
-      items={items}
-      onReorder={(next) => setItems(next.map((it, i) => ({ ...it, position: i })))}
-      containerClassName="bg-gray-50 rounded-xl p-6 space-y-2"
-      itemClassName="bg-white rounded-lg shadow-sm hover:shadow-lg transition-all duration-200 cursor-move"
-      showDropIndicator
-      dropIndicatorClassName="bg-blue-500"
-      renderItem={(item) => (
-        <div className="flex items-center p-4 space-x-3">
-          <span className="text-2xl">{item.icon}</span>
-          <span className="font-medium text-gray-700">{item.name}</span>
-        </div>
-      )}
+    <KanbanBoard
+      state={state}
+      onDragEnd={handleDragEnd}
+      renderColumn={(column) => <div style={{ padding: 12 }}>{column.title}</div>}
+      renderCard={(card) => <div style={{ padding: 12 }}>{card.title}</div>}
     />
   );
 }
 ```
 
----
+## API reference: list module
 
-## 📚 API Reference
+### Core types
 
-### DragDropList Component
+```ts
+type DraggableItem = {
+  id: string;
+  position: number;
+  [key: string]: any;
+};
 
-| Prop                     | Type                                          | Default      | Description                                                                                            |
-| ------------------------ | --------------------------------------------- | ------------ | ------------------------------------------------------------------------------------------------------ |
-| `items`                  | `Array<DraggableItem & T>`                    | —            | Items to render. Must include `{ id: string; position: number }`.                                      |
-| `onReorder`              | `(next: T[], updates: OrderUpdate[]) => void` | —            | Called after drop. `next` is the new array; `updates` has id + newPosition.                            |
-| `renderItem`             | `(item: T) => React.ReactNode`                | —            | Custom renderer for each item.                                                                         |
-| `direction`              | `"vertical" \| "horizontal"`                  | `"vertical"` | Drag axis + layout.                                                                                    |
-| `gap`                    | `number`                                      | `0`          | Gap (px) between items.                                                                                |
-| `disabled`               | `boolean`                                     | `false`      | Disable dragging.                                                                                      |
-| `showDropIndicator`      | `boolean`                                     | `false`      | Show a drop indicator while dragging.                                                                  |
-| `dropIndicatorPosition`  | `"top" \| "bottom"`                           | `"bottom"`   | Position of drop indicator relative to target item.                                                    |
-| `dropIndicatorClassName` | `string`                                      | —            | CSS class applied to the drop indicator element.                                                       |
-| `dragPreviewStyle`       | `React.CSSProperties`                         | —            | Inline styles for custom drag preview.                                                                 |
-| `containerClassName`     | `string`                                      | —            | Class applied to the container.                                                                        |
-| `itemClassName`          | `string`                                      | —            | Class applied to each item wrapper.                                                                    |
-
-### Kanban Components
-
-See the [Kanban Documentation](./docs/kanban.md) for complete API reference, including:
-- `KanbanBoard` - High-level component
-- `KanbanColumnView` - Headless column component
-- `KanbanCardView` - Headless card component
-- `AnnouncerProvider` - Accessibility provider
-- Helper utilities and types
-
----
-
-## 🗂️ Kanban Board Features
-
-### Core Functionality
-- ✅ **Drag cards** within and between columns
-- ✅ **Reorder columns** by dragging headers
-- ✅ **Empty column support** - Drop into columns with no cards
-- ✅ **Cancel drag** - Drop outside board to cancel
-- ✅ **Normalized state** - Efficient data structure
-
-### Accessibility (a11y)
-- ♿ **Screen reader support** with live announcements
-- 🎹 **Keyboard navigation** (infrastructure ready)
-- 🏷️ **Proper ARIA attributes**
-- 📢 **Context-aware messages**
-
-### Developer Experience
-- 📘 **Full TypeScript support**
-- 🎨 **Headless architecture** - Style with any framework
-- 🔧 **Helper utilities** - `applyDragResult`, reorder functions
-- 📖 **Migration guide** from react-beautiful-dnd
-
-### Customization
-The Kanban board is completely headless, giving you full control:
-- Custom card designs
-- Custom column headers
-- Theme support
-- Animation styles
-- Responsive layouts
-
----
-
-## 📂 Examples
-
-This repo includes comprehensive examples:
-
-### Drag & Drop Lists
-* [Basic Example](./examples/basic-example.tsx)
-* [Tailwind Example](./examples/tailwind-example.tsx)
-* [Material UI Example](./examples/material-ui-example.tsx)
-* [Advanced Features](./examples/advanced-features.tsx)
-* [Styled Components](./examples/styled-components-example.tsx)
-
-### Kanban Boards
-* [Basic Kanban](./examples/kanban/basic-kanban.tsx)
-* [Rich Cards with Tags & Avatars](./examples/kanban/rich-cards-kanban.tsx)
-* [Multi-theme Kanban](./examples/kanban/themed-kanban.tsx)
-* [Kanban with Accessibility](./examples/kanban/accessible-kanban.tsx)
-
-👉 Explore the [`examples/`](./examples) folder for the complete code.
-
-🎮 **Live Demo**: Check out our [interactive demo app](https://react-dragdrop-kit.netlify.app/) with full Kanban showcase!
-
----
-
-## 🧠 Advanced Usage
-
-### TypeScript
-
-```tsx
-import type { DraggableItem, OrderUpdate, KanbanBoardState, DropResult } from 'react-dragdrop-kit';
-import type { KanbanCard, KanbanColumn } from 'react-dragdrop-kit/kanban';
-
-// Extend with custom fields
-interface TodoItem extends DraggableItem {
-  title: string;
-  completed: boolean;
-}
-
-interface ProjectCard extends KanbanCard {
-  priority: 'low' | 'medium' | 'high';
-  assignee: string;
-  tags: string[];
-}
+type OrderUpdate = {
+  id: string;
+  newPosition: number;
+  moved?: boolean;
+};
 ```
 
-### React Strict Mode (React 19)
+### DragDropList props
 
-In dev, React Strict Mode **double-mounts** to surface side effects. If you see duplicate `onReorder` calls in development, ensure your event listeners clean up correctly and keep callback identities stable with `useCallback`. Production builds call once.
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `items` | `T[]` | Required | Controlled items. Each item must include `id` and `position`. |
+| `onReorder` | `(newItems: T[], orderUpdates: OrderUpdate[]) => void` | Required | Fired after successful drop/reorder. |
+| `renderItem` | `(item: T, index: number) => ReactNode` | Required | Item renderer. |
+| `containerClassName` | `string` | `""` | Class name for container. |
+| `containerStyle` | `React.CSSProperties` | `{}` | Inline style for container. |
+| `itemClassName` | `string` | `""` | Class for each draggable wrapper. |
+| `itemStyle` | `React.CSSProperties` | `{}` | Style for each draggable wrapper. |
+| `dragPreviewClassName` | `string` | `""` | Class for generated drag preview. |
+| `dragPreviewStyle` | `React.CSSProperties` | `{}` | Style for generated drag preview. |
+| `onDragStart` | `(item: T, index: number) => void` | `undefined` | Callback on item drag start. |
+| `onDragEnd` | `(item: T, index: number) => void` | `undefined` | Callback on item drag end. |
+| `disabled` | `boolean` | `false` | Disables list drag/drop. |
+| `gap` | `number \| string` | `undefined` | Gap applied to container. |
+| `direction` | `"vertical" \| "horizontal"` | `"vertical"` | Layout and closest-edge interpretation. |
+| `showDropIndicator` | `boolean` | `false` | Enables drop indicator line. |
+| `dropIndicatorClassName` | `string` | `""` | Class for drop indicator. |
+| `dropIndicatorStyle` | `React.CSSProperties` | `{}` | Style for drop indicator. |
+| `dropIndicatorPosition` | `"top" \| "bottom"` | `"bottom"` | Indicator position for hovered target item. |
+| `dragHandle` | `string` | `undefined` | CSS selector for handle-only dragging. |
+| `selectedIds` | `string[]` | `[]` | Selected IDs used by multi-drag. |
+| `multiDragEnabled` | `boolean` | `false` | Enables grouped drag behavior. |
 
----
+## API reference: Kanban module
 
-## 📊 Bundle Size
+The full Kanban API is documented in [docs/kanban.md](./docs/kanban.md).
 
-| Module | Size (Minified) |
-|--------|-----------------|
-| `react-dragdrop-kit` (Main) | ~5KB |
-| `react-dragdrop-kit/kanban` | ~9KB |
+Exports:
 
-Tree-shakeable exports mean you only pay for what you use!
+- Components: `KanbanBoard`, `KanbanColumnView`, `KanbanCardView`
+- Hooks: `useKanbanDnd`, `useAutoscroll`
+- A11y: `AnnouncerProvider`, `useAnnouncer`, `announcements`
+- Utils: `applyDragResult`, `reorderArray`
+- Types: `KanbanBoardState`, `DropResult`, `KanbanCard`, `KanbanColumn`, and more
 
----
+## Examples
 
-## 🔄 Migration Guides
+### Repository examples
+
+- `examples/basic-example.tsx`
+- `examples/advanced-features.tsx`
+- `examples/material-ui-example.tsx`
+- `examples/tailwind-example.tsx`
+- `examples/kanban/basic-kanban.tsx`
+- `examples/kanban/rich-cards-kanban.tsx`
+- `examples/kanban/themed-kanban.tsx`
+- `examples/kanban/accessible-kanban.tsx`
+
+### Demo examples
+
+- List/grid examples under `apps/demo/src/examples/*`
+- Kanban demos:
+  - `apps/demo/src/examples/BasicKanban/index.tsx`
+  - `apps/demo/src/examples/RichKanban/index.tsx`
+  - `apps/demo/src/examples/SwimlanesKanban/index.tsx`
+  - `apps/demo/src/examples/WipLimitsKanban/index.tsx`
+
+## Migration notes
 
 ### From react-beautiful-dnd
 
-See our comprehensive [Kanban migration guide](./docs/kanban.md#migration-from-react-beautiful-dnd) for step-by-step instructions on migrating from `react-beautiful-dnd`.
+High-level mapping for Kanban use cases:
 
-Key differences:
-- Normalized state structure
-- No auto-generated IDs
-- Render props instead of children
-- Better TypeScript support
+- `DragDropContext` -> `KanbanBoard`
+- `Droppable` -> `KanbanColumnView`
+- `Draggable` -> `KanbanCardView`
 
----
+Important differences:
 
-## 🤝 Contributing
+1. State is normalized (`columns` + `cards`) instead of nested.
+2. IDs are explicit and owned by your app.
+3. Rendering is done via render functions (`renderColumn`, `renderCard`).
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+## Development notes
 
----
+### React Strict Mode
 
-## 📝 License
+In development, React Strict Mode can mount effects twice.
+Ensure listener setup and cleanup are idempotent when integrating custom logic.
 
-MIT © [Yourstruggle11](https://github.com/Yourstruggle11)
+## Bundle size
 
----
+Approximate minified sizes:
 
-## 🙏 Credits
+- `react-dragdrop-kit`: about 5KB
+- `react-dragdrop-kit/kanban`: about 9KB
 
-Built with:
-- [`@atlaskit/pragmatic-drag-and-drop`](https://atlassian.design/components/pragmatic-drag-and-drop) - Performance-focused drag and drop
-- Inspired by `react-beautiful-dnd` API design
-- Community feedback and contributions
+## Documentation and links
 
----
+- [Kanban guide](./docs/kanban.md)
+- [Known issues](./KNOWN_ISSUES.md)
+- [Changelog](./packages/react-dragdrop-kit/CHANGELOG.md)
+- [Examples folder](./examples)
+- [Demo app](https://react-dragdrop-kit.netlify.app/)
 
-## 📖 Documentation
+## Support
 
-- [Kanban Board Guide](./docs/kanban.md)
-- [Known Issues & Limitations](./KNOWN_ISSUES.md)
-- [CHANGELOG](./CHANGELOG.md)
-- [Examples](./examples/)
-- [Demo Application](https://react-dragdrop-kit.netlify.app/) — open “Known Issues” from the sidebar
+- [Report issues](https://github.com/Yourstruggle11/react-dragdrop-kit/issues)
+- [Request features](https://github.com/Yourstruggle11/react-dragdrop-kit/issues/new)
 
----
+## License
 
-## 💬 Support
-
-- 🐛 [Report Issues](https://github.com/Yourstruggle11/react-dragdrop-kit/issues)
-- 💡 [Request Features](https://github.com/Yourstruggle11/react-dragdrop-kit/issues/new)
-- ⭐ [Star on GitHub](https://github.com/Yourstruggle11/react-dragdrop-kit)
-
----
-
-<div align="center">
-  <strong>Made with ❤️ by <a href="https://github.com/Yourstruggle11" target="_blank" rel="noopener noreferrer">Yourstruggle11</a> for the React community</strong>
-</div>
+MIT

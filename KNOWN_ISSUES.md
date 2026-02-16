@@ -1,198 +1,97 @@
-# Known Issues & Limitations
+# Known Issues and Limitations
 
-This document tracks known issues and limitations in the react-dragdrop-kit library and the demo. Use IDs to reference items in commits and PRs.
+This document tracks active issues and known limitations in `react-dragdrop-kit` and the demo.
 
 ## Recent Updates
 
-- 2025-10-13: [DEMO-004] Toast spam fixed with global debounced manager; applied across examples.
-- 2025-10-13: Document moved to repo root and standardized with IDs, scope, owner, and acceptance criteria.
-- 2025-10-13: Added in-app “Known Issues” page in demo sidebar that renders this document.
+- 2026-02-15: [LIM-001] selector-based drag handles shipped via `dragHandle` on `DragDropList`.
+- 2026-02-15: [LIM-002] opt-in multi-item drag shipped via `selectedIds` + `multiDragEnabled`.
+- 2026-02-15: [BUG-003] boundary reorder stability fixed (closest-edge data + normalized destination index math).
+- 2026-02-15: Demo filtered-list reorder data-loss fixed in Todo, Image Gallery, Multi Select, and Grid examples.
+- 2025-10-13: [DEMO-004] toast spam fixed with global debounced manager.
 
 ## Library Limitations
 
-### [LIM-001] Drag Handles Not Supported
-**Scope:** Library  
-**Owner:** Library Core  
-**Status:** Planned  
-**Impact:** Medium  
-**Priority:** P2  
-**Affected Examples:** Drag Handles (demo)  
-**Location:** Library: `packages/react-dragdrop-kit/` • Demo: `apps/demo/src/examples/DragHandle/`
-
-**Description:**
-The library doesn't support drag handles (restricting drag start to a specific sub-element). Currently, the entire item is draggable.
-
-**Workaround:**
-The demo shows that interactive buttons inside a draggable item still work (clicks do not start drag).
-
-**How to Test:**
-1. Open the Drag Handles demo example.  
-2. Try to drag using only the “handle” icon areas.  
-3. Observe that drag can be initiated from any part of the item.
-
-**Proposed Fix (Acceptance Criteria):**
-- `DragDropList` accepts a `dragHandle` CSS selector.  
-- Drag only starts when the initial mousedown/touchstart is within the handle.  
-- Buttons/inputs outside the handle remain fully interactive.  
-- Keyboard drag remains unaffected.
-
-**Refs:** –
-
----
-
-### [LIM-002] Multi-Item Drag Not Supported
-**Scope:** Library  
-**Owner:** Library Core  
-**Status:** Planned  
-**Impact:** Medium  
-**Priority:** P2  
-**Affected Examples:** Multi-Selection Drag (demo)  
-**Location:** Library: `packages/react-dragdrop-kit/` • Demo: `apps/demo/src/examples/MultiSelect/`
-
-**Description:**
-Only one item can be dragged at a time. The demo supports visual multi-select and bulk actions, but not dragging multiple items together.
-
-**Workaround:**
-Use bulk actions (Move to Top, Delete, Duplicate) on selected items.
-
-**How to Test:**
-1. Select multiple items via checkboxes.  
-2. Attempt to drag them together.  
-3. Observe that only a single item can move via drag.
-
-**Proposed Fix (Acceptance Criteria):**
-- Drag state tracks multiple selected items.  
-- Drop target logic accepts multi-item payloads.  
-- Position updates apply consistently to all dragged items.  
-- Works for vertical/horizontal lists and grids.
-
-**Refs:** –
-
----
-
-## Known Bugs
-
-### [BUG-003] Last Item Reordering Issue
-**Scope:** Library  
-**Owner:** Library Core  
-**Status:** Unfixed  
-**Impact:** Medium  
-**Priority:** P2  
-**Affected:** All list/grid examples  
+### [LIM-003] Full Keyboard Reorder for Lists
+**Scope:** Library
+**Owner:** Library Core
+**Status:** Planned
+**Impact:** Medium
+**Priority:** P2
 **Location:** `packages/react-dragdrop-kit/src/`
 
 **Description:**
-The last item sometimes fails to reorder or snaps back. Likely a boundary drop-zone calculation issue.
+Pointer and screen reader flows are supported, but full keyboard-driven list reordering is still pending.
 
-**How to Reproduce:**
-1. Create a list with 5+ items.  
-2. Drag the last item to a new position.  
-3. Intermittently observe failure to drop in the intended position.
-
-**Potential Root Causes:**
-- Drop zone calculation for the last item.  
-- Boundary detection at the end of the list.  
-- Position update logic in `useDragDropMonitor`.
-
-**Files to Investigate:**
-- `packages/react-dragdrop-kit/src/hooks/useDragDropMonitor.ts`  
-- `packages/react-dragdrop-kit/src/components/DraggableItemWrapper.tsx`  
-- `packages/react-dragdrop-kit/src/components/DragDropList.tsx`
-
-**Proposed Fix (Acceptance Criteria):**
-- Last item’s drop zone extends to container boundary.  
-- Calculations do not assume a trailing item exists.  
-- Verified with 1, 2, 3, 5, 10, 100 items; vertical/horizontal; grid layouts.
-
-**Refs:** –
+**Acceptance Criteria:**
+- Keyboard pickup, move, and drop flow for list items.
+- Maintains current controlled API behavior.
+- Verified across vertical, horizontal, and grid-like lists.
 
 ---
 
-## Demo Issues (Fixed)
+## Fixed Items
 
-### [DEMO-004] Toast Notifications Spam — FIXED
-**Scope:** Demo  
-**Owner:** Demo Maintainers  
-**Status:** Fixed (Oct 2025)  
-**Impact:** Medium  
-**Priority:** P2  
-**Location:** `apps/demo/src/`
+### [LIM-001] Drag Handles Not Supported - FIXED
+**Scope:** Library
+**Owner:** Library Core
+**Status:** Fixed (2026-02-15)
+**Location:** `packages/react-dragdrop-kit/src/components/DragDropList.tsx`, `packages/react-dragdrop-kit/src/components/DraggableItemWrapper.tsx`
 
-**Description:**
-Multiple toast notifications fired per drag and toasts could appear after navigation.
+**Fix Summary:**
+- Added optional `dragHandle?: string` prop.
+- Drag now starts only from matching handle descendants.
+- Non-handle interactive controls remain clickable.
 
-**Fix:**
-- Global debounced toast manager (`useDebouncedToast`) with timeout/id coordination.  
-- Dismiss/clear pending toasts across views; stable toast id to replace instead of stack.
+---
 
-**How to Test:**
-1. Reorder in Dashboard Widgets; navigate to Image Gallery; reorder.  
-2. Only one toast appears in the active view; no delayed toasts from the previous view.  
-3. Rapid reorders produce a single consolidated toast.
+### [LIM-002] Multi-Item Drag Not Supported - FIXED
+**Scope:** Library
+**Owner:** Library Core
+**Status:** Fixed (2026-02-15)
+**Location:** `packages/react-dragdrop-kit/src/hooks/useDragDropMonitor.ts`, `packages/react-dragdrop-kit/src/utils/order.ts`
 
-**Refs:** –
+**Fix Summary:**
+- Added optional `selectedIds?: string[]` and `multiDragEnabled?: boolean`.
+- Added `reorderMany` block move utility.
+- Preserved single-item drag behavior by default.
+
+---
+
+### [BUG-003] Last Item Reordering Instability - FIXED
+**Scope:** Library
+**Owner:** Library Core
+**Status:** Fixed (2026-02-15)
+**Location:** `packages/react-dragdrop-kit/src/components/DraggableItemWrapper.tsx`, `packages/react-dragdrop-kit/src/hooks/useDragDropMonitor.ts`
+
+**Fix Summary:**
+- Attached closest-edge metadata to list item drop targets.
+- Added destination normalization helpers to handle boundary and same-list offset math.
+- Added regression tests for boundary and normalized index behavior.
+
+---
+
+### [DEMO-005] Filtered Reorder Could Drop Hidden Items - FIXED
+**Scope:** Demo
+**Owner:** Demo Maintainers
+**Status:** Fixed (2026-02-15)
+**Location:** `apps/demo/src/utils/mergeReorderedSubset.ts` and filtered examples
+
+**Fix Summary:**
+- Added `mergeReorderedSubset` utility.
+- Reorder now updates visible subset while preserving hidden item slots.
 
 ---
 
 ## Feature Requests
 
-1. Drag Handle Support (LIM-001) — selector-based handles.  
-2. Multi-Item Drag (LIM-002) — drag groups of selected items.  
-3. Nested Lists — hierarchical drag between nested containers.  
-4. Drag Constraints — axis locking and boundaries.  
-5. Custom Drop Indicators — position and style control.  
-6. Drag Preview Customization — improved API for custom previews.  
-7. Keyboard Shortcuts — full keyboard reordering (a11y).
+1. Nested Lists and Tree Drag.
+2. Axis/bounds drag constraints.
+3. Extended drag preview API.
+4. Keyboard shortcuts for full reordering flows.
 
 ---
 
-## Testing Checklist
-
-When fixing bugs or adding features, test these scenarios:
-
-**Basic Functionality**  
-- [ ] Drag first item to last position  
-- [ ] Drag last item to first position  
-- [ ] Drag middle item up and down  
-- [ ] Lists with 1, 2, 3, 5, 10, 100 items  
-- [ ] Rapid consecutive drags  
-- [ ] Cancel drag (ESC/outside)
-
-**Edge Cases**  
-- [ ] Empty list  
-- [ ] Single item list  
-- [ ] Filtered lists  
-- [ ] Grid layouts  
-- [ ] Horizontal layouts  
-- [ ] Nested scroll containers
-
-**Browser Compatibility**  
-- [ ] Chrome/Edge  
-- [ ] Firefox  
-- [ ] Safari  
-- [ ] Mobile browsers
-
-**Accessibility**  
-- [ ] Keyboard navigation  
-- [ ] Screen reader announcements  
-- [ ] Focus management  
-- [ ] High contrast mode
-
----
-
-## Contributing
-
-If you encounter a new issue or want to contribute a fix:  
-1. Determine whether the issue is in the demo or library.  
-2. Add a new item with an ID, scope, owner, and clear reproduction steps.  
-3. Add or update a test if possible.  
-4. Submit a PR with the fix and reference the ID.
-
-For library fixes, modify code in `packages/react-dragdrop-kit/src/`  
-For demo fixes, modify code in `apps/demo/src/`
-
----
-
-Last Updated: October 2025  
-Demo Version: 1.0.0  
+Last Updated: 2026-02-15
+Demo Version: 1.0.0
 Library Version: 1.2.0

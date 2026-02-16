@@ -1,6 +1,7 @@
 export type DraggableItem = {
   id: string;
   position: number;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [key: string]: any;
 };
 
@@ -29,6 +30,9 @@ export type DragDropListProps<T extends DraggableItem> = {
   dropIndicatorClassName?: string;
   dropIndicatorStyle?: React.CSSProperties;
   dropIndicatorPosition?: "top" | "bottom";
+  dragHandle?: string;
+  selectedIds?: string[];
+  multiDragEnabled?: boolean;
 };
 
 export type DraggableItemWrapperProps<T extends DraggableItem> = {
@@ -46,4 +50,6 @@ export type DraggableItemWrapperProps<T extends DraggableItem> = {
   dropIndicatorClassName?: string;
   dropIndicatorStyle?: React.CSSProperties;
   dropIndicatorPosition?: "top" | "bottom";
+  direction?: "vertical" | "horizontal";
+  dragHandle?: string;
 };
