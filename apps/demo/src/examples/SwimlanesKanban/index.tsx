@@ -22,11 +22,23 @@ interface Swimlane {
   state: KanbanBoardState;
 }
 
-const laneColumns = [
-  { id: "todo", title: "To Do", cardIds: [] as string[] },
-  { id: "in-progress", title: "In Progress", cardIds: [] as string[] },
-  { id: "done", title: "Done", cardIds: [] as string[] },
-];
+type LaneColumnGroup = {
+  todo: string[];
+  inProgress: string[];
+  done: string[];
+};
+
+function createLaneColumns(laneKey: string, cardsByColumn: LaneColumnGroup) {
+  return [
+    { id: `${laneKey}-todo`, title: "To Do", cardIds: cardsByColumn.todo },
+    {
+      id: `${laneKey}-in-progress`,
+      title: "In Progress",
+      cardIds: cardsByColumn.inProgress,
+    },
+    { id: `${laneKey}-done`, title: "Done", cardIds: cardsByColumn.done },
+  ];
+}
 
 const initialLanes: Swimlane[] = [
   {
@@ -34,11 +46,11 @@ const initialLanes: Swimlane[] = [
     title: "Design Lane",
     owner: "Design Team",
     state: {
-      columns: [
-        { ...laneColumns[0], cardIds: ["design-1", "design-2"] },
-        { ...laneColumns[1], cardIds: ["design-3"] },
-        { ...laneColumns[2], cardIds: [] },
-      ],
+      columns: createLaneColumns("design", {
+        todo: ["design-1", "design-2"],
+        inProgress: ["design-3"],
+        done: [],
+      }),
       cards: {
         "design-1": { id: "design-1", title: "Review component spacing" },
         "design-2": { id: "design-2", title: "Create empty state illustrations" },
@@ -51,11 +63,11 @@ const initialLanes: Swimlane[] = [
     title: "Engineering Lane",
     owner: "Frontend Team",
     state: {
-      columns: [
-        { ...laneColumns[0], cardIds: ["eng-1", "eng-2"] },
-        { ...laneColumns[1], cardIds: ["eng-3"] },
-        { ...laneColumns[2], cardIds: ["eng-4"] },
-      ],
+      columns: createLaneColumns("engineering", {
+        todo: ["eng-1", "eng-2"],
+        inProgress: ["eng-3"],
+        done: ["eng-4"],
+      }),
       cards: {
         "eng-1": { id: "eng-1", title: "Add monitor lifecycle tests" },
         "eng-2": { id: "eng-2", title: "Implement drop-indicator demo" },
@@ -84,6 +96,16 @@ export default function SwimlanesKanbanExample() {
   const handleLaneDragEnd = useCallback(
     (laneId: string, result: DropResult, stateBefore: KanbanBoardState) => {
       if (!result.destination) return;
+
+      // Ignore drag events that originated from a different lane instance.
+      if (result.type === "CARD" && !stateBefore.cards[result.draggableId]) return;
+      if (
+        result.type === "COLUMN" &&
+        !stateBefore.columns.some((column) => column.id === result.draggableId)
+      ) {
+        return;
+      }
+
       const nextLaneState = applyDragResult(stateBefore, result);
       setLanes((prev) =>
         prev.map((lane) =>

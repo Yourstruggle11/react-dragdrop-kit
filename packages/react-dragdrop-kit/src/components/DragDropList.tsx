@@ -27,6 +27,7 @@ export function DragDropList<T extends DraggableItem>({
   dragHandle,
   selectedIds = [],
   multiDragEnabled = false,
+  liveReorder = false,
 }: DragDropListProps<T>) {
   const containerRef = useRef<HTMLDivElement>(null);
   useDragDropMonitor({
@@ -36,6 +37,7 @@ export function DragDropList<T extends DraggableItem>({
     direction,
     selectedIds,
     multiDragEnabled,
+    liveReorder,
   });
   const [isDraggingOver, setIsDraggingOver] = useState(false);
 

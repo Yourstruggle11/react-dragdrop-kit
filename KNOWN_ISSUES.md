@@ -4,6 +4,9 @@ This document tracks active issues and known limitations in `react-dragdrop-kit`
 
 ## Recent Updates
 
+- 2026-02-19: Added optional `liveReorder` support for list/grid flows via `DragDropList`.
+- 2026-02-19: Stabilized list target-slot drop behavior for vertical/horizontal flows.
+- 2026-02-19: Added monitor regression coverage for live reorder and target resolution.
 - 2026-02-15: [LIM-001] selector-based drag handles shipped via `dragHandle` on `DragDropList`.
 - 2026-02-15: [LIM-002] opt-in multi-item drag shipped via `selectedIds` + `multiDragEnabled`.
 - 2026-02-15: [BUG-003] boundary reorder stability fixed (closest-edge data + normalized destination index math).
@@ -27,6 +30,24 @@ Pointer and screen reader flows are supported, but full keyboard-driven list reo
 - Keyboard pickup, move, and drop flow for list items.
 - Maintains current controlled API behavior.
 - Verified across vertical, horizontal, and grid-like lists.
+
+---
+
+### [LIM-004] Kanban Live Reorder Preview
+**Scope:** Library (Kanban)
+**Owner:** Library Core
+**Status:** Planned
+**Impact:** Medium
+**Priority:** P2
+**Location:** `packages/react-dragdrop-kit/src/kanban/`
+
+**Description:**
+Kanban reordering currently commits on drop through `onDragEnd`. A live preview reorder mode (drag-over state mutation with final commit/revert semantics) is not shipped yet.
+
+**Acceptance Criteria:**
+- Optional, non-breaking `liveReorder` capability for Kanban flows.
+- Stable behavior for same-column, cross-column, empty-column, and column reorder interactions.
+- Regression coverage for drag-over and drop-finalization behavior.
 
 ---
 
@@ -92,6 +113,6 @@ Pointer and screen reader flows are supported, but full keyboard-driven list reo
 
 ---
 
-Last Updated: 2026-02-15
-Demo Version: 1.0.0
-Library Version: 1.2.0
+Last Updated: 2026-02-19
+Demo Version: workspace (`apps/demo@0.0.0`)
+Library Version: 1.4.0

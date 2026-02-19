@@ -5,7 +5,7 @@ Build sortable lists, grids, and Kanban boards with a controlled API and minimal
 
 [![npm version](https://img.shields.io/npm/v/react-dragdrop-kit.svg)](https://www.npmjs.com/package/react-dragdrop-kit)
 [![npm downloads](https://img.shields.io/npm/dm/react-dragdrop-kit.svg)](https://www.npmjs.com/package/react-dragdrop-kit)
-[![bundle size](https://img.shields.io/bundlephobia/minzip/react-dragdrop-kit)](https://bundlephobia.com/package/react-dragdrop-kit)
+[![npm unpacked size](https://img.shields.io/npm/unpacked-size/react-dragdrop-kit)](https://www.npmjs.com/package/react-dragdrop-kit)
 [![license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/Yourstruggle11/react-dragdrop-kit)
 [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/Yourstruggle11/react-dragdrop-kit)
 
@@ -29,6 +29,7 @@ This keeps behavior predictable and easy to integrate with app-specific rules.
 - Optional custom drag preview style/class
 - Optional handle-only dragging via `dragHandle`
 - Optional multi-item drag with `selectedIds` + `multiDragEnabled`
+- Optional live list reordering during drag-over via `liveReorder`
 
 ### Kanban module
 
@@ -38,6 +39,7 @@ This keeps behavior predictable and easy to integrate with app-specific rules.
 - Headless rendering (`renderColumn`, `renderCard`)
 - Accessibility helpers (`AnnouncerProvider`, `useAnnouncer`, `announcements`)
 - Keyboard drag-reorder is planned, not fully shipped yet
+- Live-reorder preview for Kanban is not shipped yet (drop-commit only)
 
 ### General
 
@@ -112,6 +114,7 @@ export default function TodoList() {
   dragHandle="[data-drag-handle]"
   selectedIds={selectedIds}
   multiDragEnabled
+  liveReorder
 />
 ```
 
@@ -120,6 +123,7 @@ Behavior notes:
 - `dragHandle` is optional. If provided, drag starts only from matching descendants.
 - `multiDragEnabled` is opt-in. Without it, behavior remains single-item drag.
 - `selectedIds` is consumed only when multi-drag is enabled.
+- `liveReorder` is opt-in. Without it, reorder commits on drop (existing behavior).
 
 ## Quick start: Kanban board
 
@@ -206,6 +210,7 @@ type OrderUpdate = {
 | `dragHandle` | `string` | `undefined` | CSS selector for handle-only dragging. |
 | `selectedIds` | `string[]` | `[]` | Selected IDs used by multi-drag. |
 | `multiDragEnabled` | `boolean` | `false` | Enables grouped drag behavior. |
+| `liveReorder` | `boolean` | `false` | Reorders list in real time during drag-over. |
 
 ## API reference: Kanban module
 

@@ -29,9 +29,10 @@ export default function ExampleWrapper({ example, children, onBack }: ExampleWra
 	const difficultyColor = difficultyColors[example.difficulty];
 
 	return (
-		<div style={{ minHeight: '100vh', background: bgColor }}>
+		<div style={{ minHeight: '100vh', background: bgColor }} className="example-shell">
 			{/* Header Bar */}
 			<div
+				className="example-header"
 				style={{
 					position: 'sticky',
 					top: 0,
@@ -42,6 +43,7 @@ export default function ExampleWrapper({ example, children, onBack }: ExampleWra
 				}}
 			>
 				<div
+					className="example-header-inner"
 					style={{
 						display: 'flex',
 						alignItems: 'center',
@@ -51,9 +53,10 @@ export default function ExampleWrapper({ example, children, onBack }: ExampleWra
 						margin: '0 auto',
 					}}
 				>
-					<div style={{ display: 'flex', alignItems: 'center', gap: spacing[4] }}>
+					<div className="example-header-left" style={{ display: 'flex', alignItems: 'center', gap: spacing[4] }}>
 						<button
 							onClick={onBack}
+							className="example-back-button"
 							style={{
 								display: 'flex',
 								alignItems: 'center',
@@ -79,9 +82,10 @@ export default function ExampleWrapper({ example, children, onBack }: ExampleWra
 							Back
 						</button>
 
-						<div>
-							<div style={{ display: 'flex', alignItems: 'center', gap: spacing[3] }}>
+						<div className="example-heading">
+							<div className="example-title-row" style={{ display: 'flex', alignItems: 'center', gap: spacing[3] }}>
 								<h1
+									className="example-title"
 									style={{
 										margin: 0,
 										fontSize: typography.fontSize['2xl'],
@@ -92,6 +96,7 @@ export default function ExampleWrapper({ example, children, onBack }: ExampleWra
 									{example.icon} {example.title}
 								</h1>
 								<span
+									className="example-difficulty"
 									style={{
 										padding: '4px 12px',
 										background: difficultyColor.bg,
@@ -105,17 +110,21 @@ export default function ExampleWrapper({ example, children, onBack }: ExampleWra
 									{example.difficulty}
 								</span>
 							</div>
-							<p style={{ margin: `${spacing[1]} 0 0 0`, fontSize: typography.fontSize.sm, color: mutedTextColor }}>
+							<p
+								className="example-description"
+								style={{ margin: `${spacing[1]} 0 0 0`, fontSize: typography.fontSize.sm, color: mutedTextColor }}
+							>
 								{example.description}
 							</p>
 						</div>
 					</div>
 
-					<div style={{ display: 'flex', gap: spacing[2] }}>
+					<div className="example-header-actions" style={{ display: 'flex', gap: spacing[2] }}>
 						<a
 							href="https://github.com/Yourstruggle11/react-dragdrop-kit#readme"
 							target="_blank"
 							rel="noopener noreferrer"
+							className="example-docs-link"
 							style={{
 								display: 'flex',
 								alignItems: 'center',
@@ -144,7 +153,76 @@ export default function ExampleWrapper({ example, children, onBack }: ExampleWra
 			</div>
 
 			{/* Content */}
-			<div>{children}</div>
+			<div className="example-content">{children}</div>
+
+			<style>{`
+				.example-header-left {
+					min-width: 0;
+				}
+
+				.example-heading {
+					min-width: 0;
+				}
+
+				.example-title-row {
+					flex-wrap: wrap;
+				}
+
+				.example-title {
+					line-height: 1.2;
+					overflow-wrap: anywhere;
+				}
+
+				.example-description {
+					max-width: 72ch;
+				}
+
+				@media (max-width: 900px) {
+					.example-header-inner {
+						flex-wrap: wrap;
+						align-items: flex-start !important;
+					}
+
+					.example-header-left {
+						flex: 1 1 100%;
+					}
+
+					.example-header-actions {
+						width: 100%;
+						justify-content: flex-end;
+					}
+				}
+
+				@media (max-width: 640px) {
+					.example-header-inner {
+						padding: ${spacing[3]} !important;
+						gap: ${spacing[2]};
+					}
+
+					.example-header-left {
+						flex-direction: column;
+						align-items: flex-start !important;
+						gap: ${spacing[2]} !important;
+					}
+
+					.example-title {
+						font-size: ${typography.fontSize.xl} !important;
+					}
+
+					.example-description {
+						font-size: ${typography.fontSize.xs} !important;
+					}
+
+					.example-header-actions {
+						justify-content: flex-start;
+					}
+
+					.example-back-button,
+					.example-docs-link {
+						padding: ${spacing[1]} ${spacing[3]} !important;
+					}
+				}
+			`}</style>
 		</div>
 	);
 }
