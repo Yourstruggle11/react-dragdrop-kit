@@ -5,6 +5,34 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.0] - 19-02-2026
+
+### Added
+- Optional `liveReorder?: boolean` prop on `DragDropList` for real-time reordering during drag-over.
+- New internal monitor logic module: `packages/react-dragdrop-kit/src/hooks/useDragDropMonitor.logic.ts`.
+- Expanded monitor regression tests for:
+  - horizontal left-edge behavior,
+  - live reordering,
+  - container-gap insertion,
+  - nearest-target selection,
+  - immediate next-item slot placement.
+
+### Fixed
+- List drop placement predictability for vertical and horizontal flows (target-slot alignment).
+- Drag target resolution when multiple overlapping draggable targets exist.
+- Self-target drop behavior by blocking self-drop in list item drop targets.
+- Image Gallery native image drag interference by disabling default image drag.
+- Rich Kanban responsive layout issues on narrow and medium screens.
+- Swimlanes Kanban lane data cross-contamination via unique per-lane column IDs and lane guards.
+
+### Changed
+- `DraggableItemWrapper` now exposes stable item metadata via `data-rdk-item-id` for DOM-based insertion math.
+- Demo examples now use list live-reorder behavior where relevant:
+  - `ImageGallery` (grid/list),
+  - `DashboardWidgets`.
+- Updated Atlaskit pragmatic drag-and-drop dependency to `^1.7.7`.
+- Demo progress and release docs updated for current implementation status.
+
 ## [1.3.0] - 16-02-2026
 
 ### Added
@@ -171,6 +199,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ---
 
 ## Migration Guide
+
+### From 1.3.0 to 1.4.0
+
+No breaking changes. Update and optionally enable live reordering:
+
+```tsx
+<DragDropList
+  items={items}
+  onReorder={handleReorder}
+  liveReorder
+/>
+```
 
 ### From 1.1.0 to 1.2.0
 

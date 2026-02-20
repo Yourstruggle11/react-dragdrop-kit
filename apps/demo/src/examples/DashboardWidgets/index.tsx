@@ -774,6 +774,8 @@ const refreshWidget = () => {
 				items={widgets}
 				onReorder={handleReorder}
 				renderItem={renderWidget}
+				direction="horizontal"
+				liveReorder
 				containerStyle={{
 					display: 'grid',
 					gridTemplateColumns: 'repeat(3, 1fr)',

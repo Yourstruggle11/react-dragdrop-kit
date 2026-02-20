@@ -176,6 +176,8 @@ export default function ImageGalleryExample() {
 				<img
 					src={image.url}
 					alt={image.title}
+					draggable={false}
+					onDragStart={(event) => event.preventDefault()}
 					style={{
 						width: '100%',
 						height: '100%',
@@ -356,6 +358,8 @@ export default function ImageGalleryExample() {
 			<img
 				src={image.url}
 				alt={image.title}
+				draggable={false}
+				onDragStart={(event) => event.preventDefault()}
 				style={{
 					width: '120px',
 					height: '80px',
@@ -693,6 +697,8 @@ function ImageGallery() {
 								items={filteredImages}
 								onReorder={handleReorder}
 								renderItem={renderGridItem}
+								direction="horizontal"
+								liveReorder
 								containerStyle={{
 									display: 'grid',
 									gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
@@ -704,6 +710,7 @@ function ImageGallery() {
 								items={filteredImages}
 								onReorder={handleReorder}
 								renderItem={renderListItem}
+								liveReorder
 								showDropIndicator
 								gap={12}
 							/>

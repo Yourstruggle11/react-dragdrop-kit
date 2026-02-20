@@ -1,10 +1,9 @@
 {
   "name": "react-dragdrop-kit",
   "author": "Souvik Sen <https://github.com/Yourstruggle11>",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "description": "A flexible, lightweight React drag-and-drop kit for building sortable lists, grids, and kanban boards with ease.",
   "license": "MIT",
-
   "main": "dist/index.js",
   "module": "dist/index.esm.js",
   "types": "dist/src/index.d.ts",
@@ -20,8 +19,11 @@
       "require": "./dist/kanban.js"
     }
   },
-  "files": ["dist", "README.md", "LICENSE"],
-
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
     "build": "rollup -c",
     "dev": "rollup -c -w",
@@ -34,7 +36,6 @@
     "postpack": "shx rm -f ./README.md ./LICENSE",
     "prepublishOnly": "npm run build && npm run sync-docs"
   },
-
   "keywords": [
     "react",
     "drag-drop",
@@ -50,17 +51,14 @@
     "kanban",
     "dnd"
   ],
-
   "peerDependencies": {
     "react": "^16.8 || ^17 || ^18 || ^19",
     "react-dom": "^16.8 || ^17 || ^18 || ^19"
   },
-
   "dependencies": {
-    "@atlaskit/pragmatic-drag-and-drop": "^1.7.4",
+    "@atlaskit/pragmatic-drag-and-drop": "^1.7.7",
     "@atlaskit/pragmatic-drag-and-drop-hitbox": "^1.1.0"
   },
-
   "devDependencies": {
     "@rollup/plugin-commonjs": "^25.0.0",
     "@rollup/plugin-node-resolve": "^15.0.0",
@@ -83,12 +81,13 @@
     "tslib": "^2.0.0",
     "typescript": "^5.0.0"
   },
-
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Yourstruggle11/react-dragdrop-kit.git"
   },
-  "bugs": { "url": "https://github.com/Yourstruggle11/react-dragdrop-kit/issues" },
+  "bugs": {
+    "url": "https://github.com/Yourstruggle11/react-dragdrop-kit/issues"
+  },
   "homepage": "https://github.com/Yourstruggle11/react-dragdrop-kit#readme",
   "sideEffects": false
 }

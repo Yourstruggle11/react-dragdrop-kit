@@ -12,6 +12,7 @@ It is designed for flexibility in styling while keeping drag/drop state predicta
 - Headless rendering with render functions
 - Accessibility announcement helpers
 - Keyboard drag-reorder planned (not fully shipped yet)
+- Kanban live-reorder preview is not shipped yet (reorder commits on drop)
 
 ## Installation
 
@@ -140,6 +141,10 @@ export default function Board() {
 | `className` | `string` | No | Class for board root. |
 | `style` | `React.CSSProperties` | No | Inline style for board root. |
 
+Note:
+- `KanbanBoard` currently does not expose a `liveReorder` prop.
+- Reordering is committed on drop through `onDragEnd`.
+
 ## DropResult structure
 
 ```ts
@@ -246,6 +251,11 @@ You can also use:
 
 Keyboard drag-reorder is not fully shipped yet.
 Use pointer/touch interactions in production for now.
+
+### Live reorder status
+
+Kanban currently uses drop-commit semantics.
+Live preview reordering during drag-over is tracked as a known limitation.
 
 ## Styling patterns
 

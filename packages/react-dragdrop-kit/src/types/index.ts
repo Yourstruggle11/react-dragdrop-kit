@@ -33,6 +33,7 @@ export type DragDropListProps<T extends DraggableItem> = {
   dragHandle?: string;
   selectedIds?: string[];
   multiDragEnabled?: boolean;
+  liveReorder?: boolean;
 };
 
 export type DraggableItemWrapperProps<T extends DraggableItem> = {

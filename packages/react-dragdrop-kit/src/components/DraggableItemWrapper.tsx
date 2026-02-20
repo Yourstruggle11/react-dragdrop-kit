@@ -132,8 +132,8 @@ export function DraggableItemWrapper<T extends DraggableItem>({
             allowedEdges: [...allowedEdges],
           });
         },
-        canDrop: ({ source }) => source.data?.type === DRAGGABLE_ITEM,
-        getIsSticky: () => true,
+        canDrop: ({ source }) =>
+          source.data?.type === DRAGGABLE_ITEM && source.data?.id !== item.id,
         onDragEnter: ({ source, self }) => {
           if (source.data?.id !== self.data?.id) {
             setIsHovered(true);
@@ -159,8 +159,6 @@ export function DraggableItemWrapper<T extends DraggableItem>({
     const element = elementRef.current;
     if (!element) return;
 
-    element.setAttribute("data-index", index.toString());
-
     if (disabled) {
       // provide a no-op cleanup to satisfy all code paths
       return () => {};
@@ -171,7 +169,13 @@ export function DraggableItemWrapper<T extends DraggableItem>({
   }, [index, createDraggable, createDropTarget, disabled]);
 
   return (
-    <div ref={elementRef} className={className} style={getItemStyles()}>
+    <div
+      ref={elementRef}
+      data-index={index}
+      data-rdk-item-id={item.id}
+      className={className}
+      style={getItemStyles()}
+    >
       {showDropIndicator && dropPosition === "top" && (
         <div
           className={dropIndicatorClassName}

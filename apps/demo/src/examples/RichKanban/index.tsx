@@ -141,6 +141,7 @@ export default function RichKanbanExample() {
   const { mode } = useThemeMode();
   const isDark = mode === "dark";
   const [state, setState] = useState<KanbanBoardState>(initialState);
+  const pagePadding = "clamp(0.75rem, 2vw, 2rem)";
 
   const totalStoryPoints = useMemo(() => {
     return Object.values(state.cards).reduce((sum, card) => {
@@ -155,7 +156,7 @@ export default function RichKanbanExample() {
   }, []);
 
   return (
-    <div style={{ padding: spacing.xl }}>
+    <div style={{ padding: pagePadding }}>
       <div style={{ maxWidth: "1400px", margin: "0 auto" }}>
         <h2
           style={{
@@ -189,15 +190,24 @@ export default function RichKanbanExample() {
         </div>
 
         <KanbanBoard
+          className="rich-kanban-board"
           state={state}
           onDragEnd={handleDragEnd}
-          style={{ display: "flex", gap: "16px", overflowX: "auto", alignItems: "flex-start" }}
+          style={{
+            display: "grid",
+            gridAutoFlow: "column",
+            gridAutoColumns: "minmax(250px, 1fr)",
+            gap: "16px",
+            overflowX: "auto",
+            alignItems: "flex-start",
+            paddingBottom: spacing.xs,
+          }}
           renderColumn={(column) => {
             const typedColumn = column as RichColumn;
             return (
               <div
                 style={{
-                  minWidth: "320px",
+                  width: "100%",
                   background: isDark ? colors.gray[800] : colors.gray[100],
                   border: `1px solid ${isDark ? colors.gray[700] : colors.gray[200]}`,
                   borderRadius: borderRadius.lg,
@@ -298,6 +308,8 @@ export default function RichKanbanExample() {
                     display: "flex",
                     justifyContent: "space-between",
                     alignItems: "center",
+                    flexWrap: "wrap",
+                    rowGap: spacing.xs,
                     color: isDark ? colors.gray[400] : colors.gray[600],
                     fontSize: typography.fontSize.xs,
                     marginBottom: spacing.sm,
@@ -326,6 +338,23 @@ export default function RichKanbanExample() {
             );
           }}
         />
+        <style>{`
+          .rich-kanban-board {
+            scrollbar-gutter: stable both-edges;
+          }
+
+          @media (max-width: 900px) {
+            .rich-kanban-board {
+              grid-auto-columns: minmax(260px, 82vw) !important;
+            }
+          }
+
+          @media (max-width: 640px) {
+            .rich-kanban-board {
+              grid-auto-columns: minmax(240px, 88vw) !important;
+            }
+          }
+        `}</style>
       </div>
     </div>
   );
